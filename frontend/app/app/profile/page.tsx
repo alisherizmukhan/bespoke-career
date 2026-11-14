@@ -31,7 +31,7 @@ export default function Profile() {
       <InlineError error={err} />
       <div className="grid gap-5">
         {([["basics", "About you"], ["work", "Experience"], ["education", "Education & skills"], ["goals", "Goals & salary"], ["links", "Links"]] as const).map(([k, t]) => (
-          <Card key={k}><h2 className="mb-5 text-lg font-semibold">{t}</h2><ProfileSections data={data} set={set} sections={[k]} /></Card>
+          <Card key={k}><h2 className="mb-5 text-lg font-medium">{t}</h2><ProfileSections data={data} set={set} sections={[k]} /></Card>
         ))}
       </div>
       <div className="mt-6 flex justify-end"><Button loading={busy} onClick={save} size="lg">Save changes</Button></div>

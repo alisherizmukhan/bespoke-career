@@ -113,6 +113,39 @@ def facets(db: Session = Depends(get_db)):
             "sources": [{"kind": k, "name": ATTRIBUTION.get(k, k), "count": n} for k, n in srcs]}
 
 
+_hist_cache: dict = {}
+
+
+@router.get("/salary-histogram")
+def salary_histogram(db: Session = Depends(get_db)):
+    """Distribution of posted yearly base pay across active US listings (powers the landing hero)."""
+    import statistics
+    import time
+
+    hit = _hist_cache.get("v")
+    if hit and time.time() - hit[0] < 600:
+        return hit[1]
+    rows = db.execute(select(Job.salary_min, Job.salary_max, Job.salary_period).where(
+        Job.is_active.is_(True), Job.is_duplicate.is_(False), Job.salary_min.isnot(None), Job.currency == "USD")).all()
+    vals = []
+    for lo, hi, period in rows:
+        a = annualize(lo, period)
+        b = annualize(hi, period) if hi else None
+        v = (a + b) / 2 if a and b else a
+        if v and 30_000 <= v <= 400_000:
+            vals.append(v)
+    step, start, n = 10_000, 30_000, 37
+    bins = [0] * n
+    for v in vals:
+        bins[min(n - 1, int((v - start) // step))] += 1
+    out = {"count": len(vals), "median": round(statistics.median(vals)) if vals else None,
+           "p25": round(sorted(vals)[len(vals) // 4]) if vals else None,
+           "p75": round(sorted(vals)[3 * len(vals) // 4]) if vals else None,
+           "start": start, "step": step, "bins": bins}
+    _hist_cache["v"] = (time.time(), out)
+    return out
+
+
 @router.get("/saved")
 def saved_jobs(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     rows = db.execute(select(Job).join(SavedJob, SavedJob.job_id == Job.id).where(SavedJob.user_id == user.id)

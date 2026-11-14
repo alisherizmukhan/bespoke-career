@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "@/components/icons";
 import { ChipsInput } from "./forms";
 import { Button, Field, Input, Textarea } from "./ui";
 
@@ -11,7 +11,7 @@ const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 function Section({ title, children, onAdd }: { title: string; children: React.ReactNode; onAdd?: () => void }) {
   return (
     <section className="space-y-3 border-t border-line pt-5 first:border-0 first:pt-0">
-      <div className="flex items-center justify-between"><h3 className="font-semibold">{title}</h3>{onAdd && <Button type="button" size="sm" variant="soft" onClick={onAdd}><Plus className="h-4 w-4" />Add</Button>}</div>
+      <div className="flex items-center justify-between"><h3 className="font-medium">{title}</h3>{onAdd && <Button type="button" size="sm" variant="soft" onClick={onAdd}><Plus className="h-4 w-4" />Add</Button>}</div>
       {children}
     </section>
   );

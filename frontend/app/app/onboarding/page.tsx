@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProfileSections, toPayload } from "@/components/profile-form";

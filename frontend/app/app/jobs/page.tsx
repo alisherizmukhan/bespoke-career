@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Bookmark } from "lucide-react";
+import { Bookmark } from "@/components/icons";
 import { Suspense, useState } from "react";
 import { JobBoard, JobCard } from "@/components/jobs";
 import { EmptyState, LoadingCards, PageHeader, Tabs } from "@/components/ui";

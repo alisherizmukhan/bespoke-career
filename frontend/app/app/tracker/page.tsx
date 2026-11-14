@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, CalendarPlus, KanbanSquare, LayoutList, Plus, Search, Table2, Trash2 } from "lucide-react";
+import { Bell, CalendarPlus, KanbanSquare, LayoutList, Plus, Search, Table2, Trash2 } from "@/components/icons";
 import { useState } from "react";
 import { CompanyAvatar } from "@/components/jobs";
 import { Badge, Button, Card, EmptyState, ErrorState, Field, InlineError, Input, LoadingCards, Modal, PageHeader, STATUS_TONE, Select, StatCard, Tabs, Textarea, cx } from "@/components/ui";
@@ -80,7 +80,7 @@ function Detail({ id, onClose }: { id: string; onClose: () => void }) {
     <div className="space-y-5">
       <div className="flex items-start gap-3">
         <CompanyAvatar name={a.company_name} />
-        <div className="flex-1"><p className="font-semibold">{a.job_title}</p><p className="text-sm text-ink-muted">{a.company_name}{a.location ? ` · ${a.location}` : ""}</p></div>
+        <div className="flex-1"><p className="font-medium">{a.job_title}</p><p className="text-sm text-ink-muted">{a.company_name}{a.location ? ` · ${a.location}` : ""}</p></div>
         <Badge tone={STATUS_TONE[a.status] || "neutral"}>{a.status_label}</Badge>
       </div>
       <div className="grid grid-cols-2 gap-3 text-sm">
@@ -99,7 +99,7 @@ function Detail({ id, onClose }: { id: string; onClose: () => void }) {
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-semibold">Interviews</p>
+        <p className="mb-2 text-sm font-medium">Interviews</p>
         {a.interviews.map((i: any) => (
           <div key={i.id} className="mb-2 rounded-md border border-line p-3 text-sm"><b>{i.title}</b> · {i.type} · {date(i.scheduled_at, true)} ({i.duration_min} min){i.interviewer ? ` · ${i.interviewer}` : ""}{i.meeting_url && <> · <a className="link" href={i.meeting_url} target="_blank" rel="noopener noreferrer">link</a></>}</div>
         ))}
@@ -114,7 +114,7 @@ function Detail({ id, onClose }: { id: string; onClose: () => void }) {
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-semibold">Reminders</p>
+        <p className="mb-2 text-sm font-medium">Reminders</p>
         {a.reminders.map((r: any) => <p key={r.id} className={cx("mb-1 text-sm", r.done && "text-ink-muted line-through")}><Bell className="mr-1.5 inline h-3.5 w-3.5 text-violet-600" />{r.title} · {date(r.due_at, true)}</p>)}
         <form className="mt-2 grid gap-2 sm:grid-cols-[1fr_1fr_auto]" onSubmit={(e) => { e.preventDefault(); addRm.mutate(); }}>
           <Input required value={rm.title} onChange={(e) => setRm({ ...rm, title: e.target.value })} placeholder="e.g. Follow up with recruiter" aria-label="Reminder" />
@@ -124,7 +124,7 @@ function Detail({ id, onClose }: { id: string; onClose: () => void }) {
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-semibold">History</p>
+        <p className="mb-2 text-sm font-medium">History</p>
         <ol className="space-y-1.5 border-l-2 border-violet-200 pl-4 text-sm">
           {a.events.map((e: any, i: number) => <li key={i}><span className="text-ink-muted">{date(e.created_at, true)}</span> — {e.type === "status_changed" ? `${e.from} → ${e.to}` : e.type.replace("_", " ")}{e.note ? `: ${e.note}` : ""}</li>)}
         </ol>
@@ -181,13 +181,13 @@ export default function Tracker() {
               return (
                 <div key={col} onDragOver={(e) => e.preventDefault()} onDrop={() => { if (drag) move.mutate({ id: drag, status: col }); setDrag(null); }}
                   className="w-[260px] shrink-0 rounded-lg bg-lavender-100 p-2.5">
-                  <div className="mb-2 flex items-center justify-between px-1"><p className="text-[13px] font-semibold">{labels[col] || col}</p><span className="tabular rounded-full bg-white px-2 text-xs text-ink-muted">{items.length}</span></div>
+                  <div className="mb-2 flex items-center justify-between px-1"><p className="text-[13px] font-medium">{labels[col] || col}</p><span className="tabular rounded-full bg-white px-2 text-xs text-ink-muted">{items.length}</span></div>
                   <div className="min-h-[60px] space-y-2">
                     {items.map((a) => (
-                      <button key={a.id} draggable onDragStart={() => setDrag(a.id)} onClick={() => setOpen(a.id)} className="card block w-full p-3 text-left hover:shadow-card">
-                        <p className="line-clamp-2 text-sm font-semibold">{a.job_title}</p>
+                      <button key={a.id} draggable onDragStart={() => setDrag(a.id)} onClick={() => setOpen(a.id)} className="card block w-full p-3 text-left hover:border-violet-300">
+                        <p className="line-clamp-2 text-sm font-medium">{a.job_title}</p>
                         <p className="text-xs text-ink-muted">{a.company_name}</p>
-                        <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-ink-muted">
+                        <div className="mt-2 flex flex-wrap gap-1.5 text-[12px] text-ink-muted">
                           {a.salary_max && <span>{money(a.salary_max, { compact: true })}</span>}
                           {a.next_interview && <span className="text-warning">Interview {date(a.next_interview)}</span>}
                           {a.applied_at && <span>Applied {date(a.applied_at)}</span>}
@@ -204,10 +204,10 @@ export default function Tracker() {
       ) : view === "table" ? (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
-            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Company", "Title", "Status", "Location", "Salary", "Applied", "Next interview"].map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Company", "Title", "Status", "Location", "Salary", "Applied", "Next interview"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
             <tbody>{apps.map((a) => (
               <tr key={a.id} onClick={() => setOpen(a.id)} className="cursor-pointer border-b border-line last:border-0 hover:bg-lavender-50">
-                <td className="px-4 py-3 font-semibold">{a.company_name}</td><td className="px-4 py-3">{a.job_title}</td>
+                <td className="px-4 py-3 font-medium">{a.company_name}</td><td className="px-4 py-3">{a.job_title}</td>
                 <td className="px-4 py-3"><Badge tone={STATUS_TONE[a.status] || "neutral"}>{a.status_label}</Badge></td>
                 <td className="px-4 py-3 text-ink-muted">{a.location || "—"}</td><td className="tabular px-4 py-3">{a.salary_max ? money(a.salary_max, { compact: true }) : "—"}</td>
                 <td className="px-4 py-3 text-ink-muted">{a.applied_at ? date(a.applied_at) : "—"}</td><td className="px-4 py-3 text-ink-muted">{a.next_interview ? date(a.next_interview, true) : "—"}</td>
@@ -217,9 +217,9 @@ export default function Tracker() {
         </div>
       ) : (
         <div className="space-y-2">{apps.map((a) => (
-          <Card key={a.id} className="flex cursor-pointer items-center gap-3 !p-4 hover:shadow-card" onClick={() => setOpen(a.id)}>
+          <Card key={a.id} className="flex cursor-pointer items-center gap-3 !p-4 hover:border-violet-300" onClick={() => setOpen(a.id)}>
             <CompanyAvatar name={a.company_name} size={40} />
-            <div className="min-w-0 flex-1"><p className="truncate font-semibold">{a.job_title}</p><p className="text-sm text-ink-muted">{a.company_name} · updated {date(a.updated_at)}</p></div>
+            <div className="min-w-0 flex-1"><p className="truncate font-medium">{a.job_title}</p><p className="text-sm text-ink-muted">{a.company_name} · updated {date(a.updated_at)}</p></div>
             <Badge tone={STATUS_TONE[a.status] || "neutral"}>{a.status_label}</Badge>
           </Card>
         ))}</div>

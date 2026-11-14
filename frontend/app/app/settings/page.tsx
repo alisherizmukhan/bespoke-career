@@ -26,7 +26,7 @@ export default function Settings() {
       <PageHeader title="Settings" subtitle="Security, privacy and your data." />
       <div className="space-y-5">
         <Card>
-          <h2 className="mb-4 font-semibold">Password</h2>
+          <h2 className="mb-4 font-medium">Password</h2>
           <form className="grid gap-4 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); changePw.mutate(); }}>
             <Field label="Current password" id="cp"><Input id="cp" type="password" required value={pw.current_password} onChange={(e) => setPw({ ...pw, current_password: e.target.value })} /></Field>
             <Field label="New password" id="np" hint="8+ characters, letters and numbers"><Input id="np" type="password" required value={pw.new_password} onChange={(e) => setPw({ ...pw, new_password: e.target.value })} /></Field>
@@ -35,7 +35,7 @@ export default function Settings() {
           </form>
         </Card>
         <Card>
-          <h2 className="font-semibold">AI processing</h2>
+          <h2 className="font-medium">AI processing</h2>
           <p className="mt-1 text-sm text-ink-muted">When on, the relevant parts of your profile, resumes and applications are sent to our AI provider (OpenAI) to generate answers. When off, the assistant uses rule-based answers only.</p>
           <label className="mt-4 flex items-center gap-3 text-sm font-medium">
             <input type="checkbox" className="h-5 w-5 accent-violet-600" checked={!!prefs.data?.ai_consent} disabled={prefs.isLoading || setAi.isPending} onChange={(e) => setAi.mutate(e.target.checked)} />
@@ -43,12 +43,12 @@ export default function Settings() {
           </label>
         </Card>
         <Card>
-          <h2 className="font-semibold">Export your data</h2>
+          <h2 className="font-medium">Export your data</h2>
           <p className="mt-1 text-sm text-ink-muted">Download your profile, resumes, applications, interviews, salary estimates and assistant messages as JSON.</p>
           <Button className="mt-4" variant="secondary" loading={exportData.isPending} onClick={() => exportData.mutate()}>Download my data</Button>
         </Card>
         <Card className="border-danger-soft">
-          <h2 className="font-semibold text-danger">Delete account</h2>
+          <h2 className="font-medium text-danger">Delete account</h2>
           <p className="mt-1 text-sm text-ink-muted">Permanently deletes your profile, resumes, uploaded files, applications and conversations. This cannot be undone.</p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Input type="password" placeholder="Confirm with your password" value={delPw} onChange={(e) => setDelPw(e.target.value)} className="sm:max-w-xs" aria-label="Password" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/icons";
 import { useState } from "react";
 import { Badge, Button, Card, ErrorState, Field, InlineError, Input, LoadingCards, Modal, PageHeader, Select, Textarea } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -25,7 +25,7 @@ export default function Knowledge() {
         actions={<Button onClick={() => setEdit({ ...EMPTY })}><Plus className="h-4 w-4" />Add guideline</Button>} />
       {q.isLoading ? <LoadingCards /> : q.isError ? <ErrorState error={q.error} /> : (
         <div className="space-y-3">{q.data.map((g: any) => (
-          <Card key={g.id} className="flex cursor-pointer flex-col gap-2 !p-4 hover:shadow-card" onClick={() => setEdit(g)}>
+          <Card key={g.id} className="flex cursor-pointer flex-col gap-2 !p-4 hover:border-violet-300" onClick={() => setEdit(g)}>
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={tone[g.category]}>{g.category.replace("_", " ")}</Badge>
               {g.industry_slug && <Badge tone="neutral" dot={false}>{g.industry_slug}</Badge>}

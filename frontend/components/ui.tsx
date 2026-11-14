@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { AlertCircle, Inbox, Loader2, Sparkles, X } from "lucide-react";
+import { AlertCircle, ArrowUpRight, Inbox, Loader2, X } from "@/components/icons";
 import Link from "next/link";
 import { forwardRef, useEffect } from "react";
 import { ApiError } from "@/lib/api";
@@ -15,15 +15,15 @@ type BtnProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
 };
 
-const btnBase = "inline-flex items-center justify-center gap-2 font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap";
+const btnBase = "inline-flex items-center justify-center gap-2 font-medium rounded-md transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap";
 const btnVariant = {
-  primary: "bg-violet-600 text-white hover:bg-violet-700",
-  secondary: "bg-white text-violet-700 border border-violet-200 hover:border-violet-400",
-  soft: "bg-violet-100 text-violet-700 hover:bg-violet-200",
+  primary: "bg-accent text-white hover:bg-accent-ink",
+  secondary: "bg-white text-ink border border-line hover:bg-lavender-50",
+  soft: "bg-lavender-100 text-ink hover:bg-lavender-200",
   ghost: "text-ink-muted hover:text-ink hover:bg-lavender-100",
   danger: "bg-white text-danger border border-danger-soft hover:bg-danger-soft",
 };
-const btnSize = { sm: "h-9 px-3 text-[13px]", md: "h-11 px-5 text-sm", lg: "h-12 px-6 text-[15px]" };
+const btnSize = { sm: "h-8 px-3 text-[13px]", md: "h-10 px-4 text-sm", lg: "h-12 px-5 text-[15px]" };
 
 export function Button({ variant = "primary", size = "md", loading, href, className, children, ...rest }: BtnProps) {
   const cls = cx(btnBase, btnVariant[variant], btnSize[size], className);
@@ -44,12 +44,12 @@ const tones = {
   success: "bg-success-soft text-success",
   warning: "bg-warning-soft text-warning",
   danger: "bg-danger-soft text-danger",
-  info: "bg-violet-100 text-violet-700",
+  info: "bg-accent-soft text-accent-ink",
   neutral: "bg-line text-ink-muted",
 };
 export function Badge({ tone = "info", dot = true, children, className }: { tone?: keyof typeof tones; dot?: boolean; children: React.ReactNode; className?: string }) {
   return (
-    <span className={cx("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold", tones[tone], className)}>
+    <span className={cx("inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-xs font-medium", tones[tone], className)}>
       {dot && <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />}
       {children}
     </span>
@@ -62,7 +62,7 @@ export const STATUS_TONE: Record<string, keyof typeof tones> = {
 };
 
 export function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
-  return <label htmlFor={htmlFor} className="text-[13px] font-semibold text-ink">{children}</label>;
+  return <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink">{children}</label>;
 }
 
 export function Field({ label, error, hint, children, id }: { label?: string; error?: string; hint?: string; children: React.ReactNode; id?: string }) {
@@ -104,9 +104,9 @@ export function LoadingCards({ n = 3 }: { n?: number }) {
 
 export function EmptyState({ title, body, action, icon: Icon = Inbox }: { title: string; body?: string; action?: React.ReactNode; icon?: any }) {
   return (
-    <div className="flex flex-col items-center rounded-lg bg-lavender-100 px-6 py-12 text-center">
-      <span className="mb-3 grid h-12 w-12 place-items-center rounded-full bg-white text-violet-600"><Icon className="h-6 w-6" /></span>
-      <p className="font-semibold text-ink">{title}</p>
+    <div className="flex flex-col items-center rounded-lg border border-dashed border-violet-200 px-6 py-12 text-center">
+      <Icon className="mb-3 h-6 w-6 text-ink-faint" />
+      <p className="font-medium text-ink">{title}</p>
       {body && <p className="mt-1 max-w-md text-sm text-ink-muted">{body}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
@@ -119,7 +119,7 @@ export function ErrorState({ error, retry }: { error: unknown; retry?: () => voi
     <div className="flex items-start gap-3 rounded-lg border border-danger-soft bg-white p-4 text-sm">
       <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-danger" />
       <div className="flex-1">
-        <p className="font-semibold text-ink">We couldn't load this.</p>
+        <p className="font-medium text-ink">We couldn't load this.</p>
         <p className="text-ink-muted">{msg}</p>
       </div>
       {retry && <Button size="sm" variant="secondary" onClick={retry}>Try again</Button>}
@@ -130,9 +130,9 @@ export function ErrorState({ error, retry }: { error: unknown; retry?: () => voi
 export function UpgradeNotice({ error }: { error: unknown }) {
   if (!(error instanceof ApiError) || error.status !== 402) return null;
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-violet-200 bg-violet-100 p-4 sm:flex-row sm:items-center">
-      <Sparkles className="h-5 w-5 shrink-0 text-violet-700" />
-      <p className="flex-1 text-sm text-violet-900">{error.message}</p>
+    <div className="flex flex-col gap-3 rounded-lg border border-line bg-white p-4 sm:flex-row sm:items-center">
+      <ArrowUpRight className="h-5 w-5 shrink-0 text-accent-ink" />
+      <p className="flex-1 text-sm text-ink">{error.message}</p>
       <Button size="sm" href="/app/billing">See plans</Button>
     </div>
   );
@@ -165,7 +165,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 p-0 sm:items-center sm:p-6" onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
       <div className={cx("max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 shadow-pop sm:rounded-lg sm:p-6", wide ? "sm:max-w-3xl" : "sm:max-w-lg")} onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 className="text-lg font-semibold text-ink">{title}</h2>
+          <h2 className="text-lg font-medium text-ink">{title}</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-md p-1 text-ink-muted hover:bg-lavender-100"><X className="h-5 w-5" /></button>
         </div>
         {children}
@@ -179,8 +179,8 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
     <div className="inline-flex flex-wrap gap-1 rounded-md border border-line bg-white p-1" role="tablist">
       {items.map((it) => (
         <button key={it.value} role="tab" aria-selected={value === it.value} onClick={() => onChange(it.value)}
-          className={cx("inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-[13px] font-semibold transition-colors",
-            value === it.value ? "bg-violet-600 text-white" : "text-ink-muted hover:bg-lavender-100 hover:text-ink")}>
+          className={cx("inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-[13px] font-medium transition-colors duration-150",
+            value === it.value ? "bg-lavender-100 text-ink shadow-[inset_0_0_0_1px_rgba(28,26,23,0.08)]" : "text-ink-muted hover:text-ink")}>
           {it.icon && <it.icon className="h-4 w-4" />}{it.label}
         </button>
       ))}
@@ -188,20 +188,17 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
   );
 }
 
-export function IconTile({ icon: Icon, tone = "violet" }: { icon: any; tone?: "violet" | "success" | "warning" | "danger" }) {
-  const t = { violet: "bg-violet-100 text-violet-600", success: "bg-success-soft text-success", warning: "bg-warning-soft text-warning", danger: "bg-danger-soft text-danger" }[tone];
-  return <span className={cx("grid h-11 w-11 shrink-0 place-items-center rounded-md", t)}><Icon className="h-5 w-5" strokeWidth={1.8} /></span>;
+export function IconTile({ icon: Icon }: { icon: any; tone?: string }) {
+  return <Icon className="h-[18px] w-[18px] shrink-0 text-ink-faint" />;
 }
 
-export function StatCard({ icon, label, value, sub, tone }: { icon: any; label: string; value: React.ReactNode; sub?: React.ReactNode; tone?: any }) {
+/** Stat cards are numbers: a label, a figure and what it compares to. The icon prop is accepted but not drawn. */
+export function StatCard({ label, value, sub }: { icon?: any; label: string; value: React.ReactNode; sub?: React.ReactNode; tone?: any }) {
   return (
-    <div className="card flex items-start gap-3.5 p-5">
-      <IconTile icon={icon} tone={tone} />
-      <div className="min-w-0">
-        <p className="text-[13px] font-medium text-ink-muted">{label}</p>
-        <p className="tabular text-[26px] font-bold leading-tight tracking-tight text-ink">{value}</p>
-        {sub && <p className="text-[13px] text-ink-muted">{sub}</p>}
-      </div>
+    <div className="card p-5">
+      <p className="text-[13px] text-ink-muted">{label}</p>
+      <p className="tabular mt-2 text-[28px] font-medium leading-none tracking-[-0.01em] text-ink">{value}</p>
+      {sub && <p className="mt-2 text-[13px] text-ink-faint">{sub}</p>}
     </div>
   );
 }
@@ -210,7 +207,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="h-display text-[28px] leading-tight sm:text-[32px]">{title}</h1>
+        <h1 className="h-display text-[32px] leading-[1.1] sm:text-[40px]">{title}</h1>
         {subtitle && <p className="mt-1 text-[15px] text-ink-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -221,40 +218,40 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 export function ScoreRing({ score, size = 96, label }: { score: number; size?: number; label?: string }) {
   const r = (size - 10) / 2;
   const c = 2 * Math.PI * r;
-  const tone = score >= 75 ? "#24663F" : score >= 55 ? "#6C47D9" : "#8A5300";
+  const tone = score >= 75 ? "#1f6b43" : score >= 55 ? "#6c47d9" : "#8a5300";
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }} role="img" aria-label={`${label || "Score"} ${score} out of 100`}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#EBE4FD" strokeWidth="8" fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke={tone} strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#e7e4dd" strokeWidth="6" fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke={tone} strokeWidth="6" fill="none" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} />
       </svg>
       <span className="absolute text-center">
-        <span className="tabular block text-2xl font-bold text-ink">{score}</span>
-        {label && <span className="block text-[11px] font-medium text-ink-muted">{label}</span>}
+        <span className="tabular block text-2xl font-medium text-ink">{score}</span>
+        {label && <span className="block text-[12px] font-medium text-ink-muted">{label}</span>}
       </span>
     </div>
   );
 }
 
+/** Wordmark in the interface family plus a flat ink mark: an open folio with a single fold line. */
 export function Logo({ className, light }: { className?: string; light?: boolean }) {
   return (
-    <Link href="/" className={cx("inline-flex items-center gap-2.5", className)} aria-label="Bespoke home">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden>
-        <rect width="34" height="34" rx="10" fill={light ? "#fff" : "#6C47D9"} />
-        <path d="M11 24.5V9.5h6.6c3.2 0 5 1.6 5 4 0 1.6-.9 2.7-2.2 3.2 1.7.4 2.9 1.7 2.9 3.6 0 2.6-2 4.2-5.4 4.2H11Z" fill={light ? "#6C47D9" : "#fff"} />
-        <circle cx="25.5" cy="8.5" r="2.5" fill="#C9B8F7" />
+    <Link href="/" className={cx("inline-flex items-center gap-2", className)} aria-label="Bespoke home">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+        <rect x="1" y="1" width="20" height="20" rx="5" fill={light ? "#eef0f5" : "#1c1a17"} />
+        <path d="M7 6.5h5.2a2.6 2.6 0 0 1 0 5.2H7m0 0h5.8a2.9 2.9 0 0 1 0 5.8H7V6.5" fill="none" stroke={light ? "#0b0d14" : "#f7f6f3"} strokeWidth="1.8" strokeLinejoin="round" />
       </svg>
-      <span className={cx("font-display text-[21px] font-extrabold tracking-[-0.03em]", light ? "text-white" : "text-ink")}>
-        Bespoke
-      </span>
+      <span className={cx("text-[17px] font-medium tracking-[-0.01em]", light ? "text-night-text" : "text-ink")}>bespoke</span>
     </Link>
   );
 }
 
-export function Sparkle({ className }: { className?: string }) {
+/** Signature: the percentile marker. A thin tick on a range with a small "You" label. */
+export function RangeMarker({ left, label = "You", dark }: { left: string; label?: string; dark?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
-      <path d="M12 2c.6 4.7 2.3 6.4 7 7-4.7.6-6.4 2.3-7 7-.6-4.7-2.3-6.4-7-7 4.7-.6 6.4-2.3 7-7Z" strokeLinejoin="round" />
-    </svg>
+    <span className="absolute -top-6 flex -translate-x-1/2 flex-col items-center" style={{ left }} aria-label={`${label} marker`}>
+      <span className={cx("font-mono text-[12px] leading-4", dark ? "text-night-text" : "text-ink")}>{label}</span>
+      <span className={cx("mt-0.5 h-5 w-px", dark ? "bg-night-text" : "bg-ink")} />
+    </span>
   );
 }

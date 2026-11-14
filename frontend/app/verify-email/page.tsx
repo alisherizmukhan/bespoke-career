@@ -1,6 +1,6 @@
 "use client";
 
-import { MailCheck } from "lucide-react";
+import { MailCheck } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { AuthLayout } from "@/components/auth-forms";
@@ -45,7 +45,7 @@ function Verify() {
       <InlineError error={err} />
       {demo && (
         <div className="rounded-lg border border-dashed border-violet-300 p-4 text-sm">
-          <p className="font-semibold text-ink">Demo mode</p>
+          <p className="font-medium text-ink">Demo mode</p>
           <p className="mt-1 text-ink-muted">Email delivery isn't configured on this server yet, so you can confirm directly.</p>
           <Button className="mt-3" variant="soft" onClick={() => { window.location.href = demo; }}>Confirm my email</Button>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, BookmarkCheck, Briefcase, Building2, Clock, ExternalLink, MapPin, Search, SlidersHorizontal, Wallet } from "lucide-react";
+import { Bookmark, BookmarkCheck, Briefcase, Building2, Clock, ExternalLink, MapPin, Search, SlidersHorizontal, Wallet } from "@/components/icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,18 +23,18 @@ export function CompanyAvatar({ name, logo, size = 44 }: { name: string | null; 
   if (logo && !broken)
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={logo} alt="" width={size} height={size} onError={() => setBroken(true)} className="shrink-0 rounded-md border border-line bg-white object-contain p-1" style={{ width: size, height: size }} />;
-  return <span className="grid shrink-0 place-items-center rounded-md bg-violet-100 text-sm font-bold text-violet-700" style={{ width: size, height: size }}>{initials}</span>;
+  return <span className="grid shrink-0 place-items-center rounded-md bg-violet-100 text-sm font-medium text-violet-700" style={{ width: size, height: size }}>{initials}</span>;
 }
 
 export function JobCard({ job, base = "/jobs", onSave }: { job: Job; base?: string; onSave?: (j: Job) => void }) {
   const sal = salaryLabel(job);
   return (
-    <article className="card group flex gap-4 p-4 transition-shadow hover:shadow-card sm:p-5">
+    <article className="card group flex gap-4 p-4 transition-shadow hover:border-violet-300 sm:p-5">
       <CompanyAvatar name={job.company} logo={job.company_logo} />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <Link href={`${base}/${job.id}`} className="line-clamp-2 text-[15px] font-semibold text-ink hover:text-violet-700">{job.title}</Link>
+            <Link href={`${base}/${job.id}`} className="line-clamp-2 text-[15px] font-medium text-ink hover:text-violet-700">{job.title}</Link>
             <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-muted">
               {job.company && <span className="inline-flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{job.company}</span>}
               {job.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{job.location}</span>}
@@ -120,18 +120,18 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <button onClick={() => setShowFilters(!showFilters)} className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3 py-1.5 text-[13px] font-semibold text-violet-700 lg:hidden">
+        <button onClick={() => setShowFilters(!showFilters)} className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3 py-1.5 text-[13px] font-medium text-violet-700 lg:hidden">
           <SlidersHorizontal className="h-4 w-4" /> Filters
         </button>
         {[["remote", "Remote"], ["with_salary", "Shows salary"]].map(([k, l]) => (
           <button key={k} onClick={() => set(k, params.get(k) ? null : "true")}
-            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-semibold", params.get(k) ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
+            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-medium", params.get(k) ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
             {l}
           </button>
         ))}
         {[["posted_days", "1", "Last 24 hours"], ["posted_days", "7", "Past week"]].map(([k, v, l]) => (
           <button key={l} onClick={() => set(k, params.get(k) === v ? null : v)}
-            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-semibold", params.get(k) === v ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
+            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-medium", params.get(k) === v ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
             {l}
           </button>
         ))}
@@ -144,36 +144,36 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
       <div className="mt-5 grid gap-6 lg:grid-cols-[250px_1fr]">
         <aside className={cx("space-y-5", showFilters ? "block" : "hidden lg:block")}>
           <div className="card p-4">
-            <p className="mb-2 text-[13px] font-semibold">Category</p>
+            <p className="mb-2 text-[13px] font-medium">Category</p>
             <div className="max-h-[300px] space-y-0.5 overflow-y-auto pr-1">
               {(facets.data?.categories || []).map((c: any) => (
                 <button key={c.name} onClick={() => set("category", params.get("category") === c.name ? null : c.name)}
-                  className={cx("flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-[13px]", params.get("category") === c.name ? "bg-violet-100 font-semibold text-violet-700" : "text-ink-muted hover:bg-lavender-100")}>
+                  className={cx("flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-[13px]", params.get("category") === c.name ? "bg-violet-100 font-medium text-violet-700" : "text-ink-muted hover:bg-lavender-100")}>
                   <span className="truncate">{c.name}</span><span className="tabular text-xs">{c.count}</span>
                 </button>
               ))}
             </div>
           </div>
           <div className="card space-y-3 p-4">
-            <label className="block text-[13px] font-semibold">Experience level
+            <label className="block text-[13px] font-medium">Experience level
               <Select value={params.get("seniority") || ""} onChange={(e) => set("seniority", e.target.value || null)} className="mt-1.5">
                 <option value="">Any level</option>
                 {SENIORITY.map((s) => <option key={s} value={s}>{titleCase(s)}</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-semibold">Job type
+            <label className="block text-[13px] font-medium">Job type
               <Select value={params.get("employment_type") || ""} onChange={(e) => set("employment_type", e.target.value || null)} className="mt-1.5">
                 <option value="">Any type</option>
                 {TYPES.map((s) => <option key={s} value={s}>{titleCase(s)}</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-semibold">Minimum salary
+            <label className="block text-[13px] font-medium">Minimum salary
               <Select value={params.get("min_salary") || ""} onChange={(e) => set("min_salary", e.target.value || null)} className="mt-1.5">
                 <option value="">Any</option>
                 {[50000, 75000, 100000, 150000, 200000].map((v) => <option key={v} value={v}>${v / 1000}k+ / year</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-semibold">Source
+            <label className="block text-[13px] font-medium">Source
               <Select value={params.get("source") || ""} onChange={(e) => set("source", e.target.value || null)} className="mt-1.5">
                 <option value="">All sources</option>
                 {(facets.data?.sources || []).map((s: any) => <option key={s.kind} value={s.kind}>{s.name} ({s.count})</option>)}
@@ -182,11 +182,11 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
           </div>
           {res.data?.external_search && (
             <div className="card p-4">
-              <p className="text-[13px] font-semibold">Search on other boards</p>
+              <p className="text-[13px] font-medium">Search on other boards</p>
               <p className="mb-2 mt-0.5 text-xs text-ink-muted">These sites don't offer public listings to aggregate, so we open the same search there.</p>
               <div className="flex flex-wrap gap-1.5">
                 {res.data.external_search.map((l) => (
-                  <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full bg-lavender-100 px-2.5 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                  <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full bg-lavender-100 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100">
                     {l.name}<ExternalLink className="h-3 w-3" />
                   </a>
                 ))}
@@ -197,7 +197,7 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
 
         <section aria-live="polite">
           <p className="mb-3 text-[13px] text-ink-muted">
-            {res.data ? <><span className="tabular font-semibold text-ink">{res.data.total.toLocaleString()}</span> jobs{params.get("q") ? ` for “${params.get("q")}”` : ""}</> : "Loading jobs…"}
+            {res.data ? <><span className="tabular font-medium text-ink">{res.data.total.toLocaleString("en-US")}</span> jobs{params.get("q") ? ` for “${params.get("q")}”` : ""}</> : "Loading jobs…"}
           </p>
           {res.isLoading ? <LoadingCards n={5} /> : res.isError ? <ErrorState error={res.error} retry={() => res.refetch()} /> :
             !res.data?.items.length ? (

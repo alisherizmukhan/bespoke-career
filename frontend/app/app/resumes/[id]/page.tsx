@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Check, CheckCircle2, Download, FileDown, GitCompare, History, Lightbulb, RotateCcw, Sparkles, Target, Wand2, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, CheckCircle2, Download, FileDown, GitCompare, History, Lightbulb, RotateCcw, Sparkles, Target, Wand2, XCircle } from "@/components/icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, use, useEffect, useState } from "react";
@@ -18,24 +18,24 @@ function AtsResult({ r }: { r: any }) {
       <div className="flex flex-wrap items-center gap-6">
         <ScoreRing score={r.score} size={110} label={r.match_score != null ? "Match" : "Quality"} />
         <div className="grid flex-1 grid-cols-2 gap-3 text-sm sm:grid-cols-3">
-          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Structure</p><p className="tabular text-lg font-bold">{r.structure_score}</p></div>
-          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Bullet quality</p><p className="tabular text-lg font-bold">{r.quality_score}</p></div>
-          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Measurable results</p><p className="tabular text-lg font-bold">{r.stats.quantified_bullets}/{r.stats.bullets}</p></div>
+          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Structure</p><p className="tabular text-lg font-medium">{r.structure_score}</p></div>
+          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Bullet quality</p><p className="tabular text-lg font-medium">{r.quality_score}</p></div>
+          <div className="rounded-md bg-lavender-50 p-3"><p className="text-xs text-ink-muted">Measurable results</p><p className="tabular text-lg font-medium">{r.stats.quantified_bullets}/{r.stats.bullets}</p></div>
         </div>
       </div>
       {r.keywords && (
         <div className="grid gap-4 md:grid-cols-2">
-          <div><p className="mb-2 text-sm font-semibold text-success">Requirements found in your resume</p><div className="flex flex-wrap gap-1.5">{[...r.keywords.matched_required, ...r.keywords.matched_preferred].map((k: string) => <Badge key={k} tone="success" dot={false}><Check className="h-3 w-3" />{k}</Badge>)}{!r.keywords.matched_required.length && <span className="text-sm text-ink-muted">None yet</span>}</div></div>
-          <div><p className="mb-2 text-sm font-semibold text-warning">Missing requirements</p><div className="flex flex-wrap gap-1.5">{r.keywords.missing_required.map((k: string) => <Badge key={k} tone="warning" dot={false}>{k}</Badge>)}{r.keywords.missing_preferred.map((k: string) => <Badge key={k} tone="neutral" dot={false}>{k} · preferred</Badge>)}{!r.keywords.missing_required.length && <span className="text-sm text-ink-muted">Nothing critical missing</span>}</div></div>
+          <div><p className="mb-2 text-sm font-medium text-success">Requirements found in your resume</p><div className="flex flex-wrap gap-1.5">{[...r.keywords.matched_required, ...r.keywords.matched_preferred].map((k: string) => <Badge key={k} tone="success" dot={false}><Check className="h-3 w-3" />{k}</Badge>)}{!r.keywords.matched_required.length && <span className="text-sm text-ink-muted">None yet</span>}</div></div>
+          <div><p className="mb-2 text-sm font-medium text-warning">Missing requirements</p><div className="flex flex-wrap gap-1.5">{r.keywords.missing_required.map((k: string) => <Badge key={k} tone="warning" dot={false}>{k}</Badge>)}{r.keywords.missing_preferred.map((k: string) => <Badge key={k} tone="neutral" dot={false}>{k} · preferred</Badge>)}{!r.keywords.missing_required.length && <span className="text-sm text-ink-muted">Nothing critical missing</span>}</div></div>
         </div>
       )}
       {(r.recommendations?.length > 0 || r.formatting_issues?.length > 0) && (
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg bg-violet-100 p-4"><p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-violet-900"><Lightbulb className="h-4 w-4" />Recommendations</p><ul className="space-y-1.5 text-sm text-violet-900">{r.recommendations.map((x: string, i: number) => <li key={i}>• {x}</li>)}</ul></div>
-          <div className="rounded-lg bg-warning-soft p-4"><p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-warning"><AlertTriangle className="h-4 w-4" />Formatting & structure</p><ul className="space-y-1.5 text-sm text-warning">{r.formatting_issues.length ? r.formatting_issues.map((x: string, i: number) => <li key={i}>• {x}</li>) : <li>No issues found.</li>}</ul></div>
+          <div className="rounded-lg bg-violet-100 p-4"><p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-violet-900"><Lightbulb className="h-4 w-4" />Recommendations</p><ul className="space-y-1.5 text-sm text-violet-900">{r.recommendations.map((x: string, i: number) => <li key={i}>• {x}</li>)}</ul></div>
+          <div className="rounded-lg bg-warning-soft p-4"><p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-warning"><AlertTriangle className="h-4 w-4" />Formatting & structure</p><ul className="space-y-1.5 text-sm text-warning">{r.formatting_issues.length ? r.formatting_issues.map((x: string, i: number) => <li key={i}>• {x}</li>) : <li>No issues found.</li>}</ul></div>
         </div>
       )}
-      {r.rewrite_suggestions?.length > 0 && <div><p className="mb-2 text-sm font-semibold">Suggested rewrites</p><ul className="space-y-2 text-sm">{r.rewrite_suggestions.map((x: string, i: number) => <li key={i} className="rounded-md border border-line p-3">{x}</li>)}</ul></div>}
+      {r.rewrite_suggestions?.length > 0 && <div><p className="mb-2 text-sm font-medium">Suggested rewrites</p><ul className="space-y-2 text-sm">{r.rewrite_suggestions.map((x: string, i: number) => <li key={i} className="rounded-md border border-line p-3">{x}</li>)}</ul></div>}
       <p className="text-xs text-ink-muted">{r.disclaimer}</p>
     </div>
   );
@@ -103,7 +103,7 @@ function ResumeDetail({ id }: { id: string }) {
 
   return (
     <div>
-      <Link href="/app/resumes" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-700"><ArrowLeft className="h-4 w-4" />Resumes</Link>
+      <Link href="/app/resumes" className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-violet-700"><ArrowLeft className="h-4 w-4" />Resumes</Link>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="h-display text-[28px] leading-tight">{r.title}</h1>
@@ -146,7 +146,7 @@ function ResumeDetail({ id }: { id: string }) {
       {tab === "generate" && (
         <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr]">
           <Card className="space-y-4">
-            <h2 className="font-semibold">Build a tailored version</h2>
+            <h2 className="font-medium">Build a tailored version</h2>
             {needsReview && <p className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">Confirm your information first (Review & confirm tab).</p>}
             <Field label="What are you applying for?" id="pp">
               <div className="flex gap-2">
@@ -169,9 +169,9 @@ function ResumeDetail({ id }: { id: string }) {
           <Card>
             {!genResult ? <div className="grid h-full place-items-center py-16 text-center text-sm text-ink-muted">Your new version and its validation report appear here.</div> : (
               <div className="space-y-5">
-                <div className="flex items-center justify-between"><div><p className="font-semibold">{genResult.version.name}</p><p className="text-xs text-ink-muted">{genResult.meta.method === "ai" ? "Rewritten with AI from your verified data" : "Reordered from your verified data"}</p></div><Badge tone="success">Saved</Badge></div>
+                <div className="flex items-center justify-between"><div><p className="font-medium">{genResult.version.name}</p><p className="text-xs text-ink-muted">{genResult.meta.method === "ai" ? "Rewritten with AI from your verified data" : "Reordered from your verified data"}</p></div><Badge tone="success">Saved</Badge></div>
                 <Validation v={genResult.validation} />
-                {genResult.meta.missing_information?.length > 0 && <div className="rounded-md bg-lavender-50 p-3 text-sm"><p className="font-semibold">Add these to make it stronger</p><ul className="mt-1 list-disc pl-5 text-ink-muted">{genResult.meta.missing_information.map((m: string) => <li key={m}>{m}</li>)}</ul></div>}
+                {genResult.meta.missing_information?.length > 0 && <div className="rounded-md bg-lavender-50 p-3 text-sm"><p className="font-medium">Add these to make it stronger</p><ul className="mt-1 list-disc pl-5 text-ink-muted">{genResult.meta.missing_information.map((m: string) => <li key={m}>{m}</li>)}</ul></div>}
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" onClick={() => exp.mutate({ fmt: "pdf", vid: genResult.version.id })}><Download className="h-4 w-4" />Download PDF</Button>
                   <Button size="sm" variant="secondary" onClick={() => exp.mutate({ fmt: "docx", vid: genResult.version.id })}>DOCX</Button>
@@ -186,7 +186,7 @@ function ResumeDetail({ id }: { id: string }) {
       {tab === "ats" && (
         <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
           <Card className="space-y-4">
-            <h2 className="font-semibold">Check against a job</h2>
+            <h2 className="font-medium">Check against a job</h2>
             <Field label="Version" id="v1"><Select id="v1" value={version} onChange={(e) => setVersion(e.target.value)}><option value="">Verified data (no version)</option>{versions.map((v: any) => <option key={v.id} value={v.id}>{v.name}</option>)}</Select></Field>
             <Field label="Job description" id="jd2" hint="Leave empty for a general quality check."><Textarea id="jd2" value={jd} onChange={(e) => setJd(e.target.value)} className="min-h-[220px]" /></Field>
             <InlineError error={analyze.error} />
@@ -202,7 +202,7 @@ function ResumeDetail({ id }: { id: string }) {
             <div className="divide-y divide-line">
               {versions.map((v: any, i: number) => (
                 <div key={v.id} className="flex flex-wrap items-center gap-3 py-3">
-                  <span className="tabular grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">v{v.version}</span>
+                  <span className="tabular grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-sm font-medium text-violet-700">v{v.version}</span>
                   <div className="min-w-0 flex-1"><p className="truncate font-medium">{v.name}</p><p className="text-xs text-ink-muted">{date(v.created_at, true)} · {v.source}{v.has_job_description ? " · tailored" : ""}</p></div>
                   <Button size="sm" variant="ghost" onClick={() => exp.mutate({ fmt: "pdf", vid: v.id })}><Download className="h-4 w-4" />PDF</Button>
                   <Button size="sm" variant="ghost" onClick={() => exp.mutate({ fmt: "docx", vid: v.id })}>DOCX</Button>
@@ -218,8 +218,8 @@ function ResumeDetail({ id }: { id: string }) {
                 <p className="text-ink-muted">{cmp.a.name} → {cmp.b.name}</p>
                 {cmp.score_a != null && <p>Job match: <b>{cmp.score_a}</b> → <b className={cx(cmp.score_b >= cmp.score_a ? "text-success" : "text-danger")}>{cmp.score_b}</b></p>}
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div><p className="font-semibold text-success">Added</p><ul className="mt-1 space-y-1">{[...cmp.skills_added.map((s: string) => `Skill: ${s}`), ...cmp.bullets_added].slice(0, 15).map((x: string) => <li key={x}>+ {x}</li>)}</ul></div>
-                  <div><p className="font-semibold text-danger">Removed</p><ul className="mt-1 space-y-1">{[...cmp.skills_removed.map((s: string) => `Skill: ${s}`), ...cmp.bullets_removed].slice(0, 15).map((x: string) => <li key={x}>− {x}</li>)}</ul></div>
+                  <div><p className="font-medium text-success">Added</p><ul className="mt-1 space-y-1">{[...cmp.skills_added.map((s: string) => `Skill: ${s}`), ...cmp.bullets_added].slice(0, 15).map((x: string) => <li key={x}>+ {x}</li>)}</ul></div>
+                  <div><p className="font-medium text-danger">Removed</p><ul className="mt-1 space-y-1">{[...cmp.skills_removed.map((s: string) => `Skill: ${s}`), ...cmp.bullets_removed].slice(0, 15).map((x: string) => <li key={x}>− {x}</li>)}</ul></div>
                 </div>
                 {cmp.summary_changed && <p className="text-ink-muted">The summary was rewritten.</p>}
               </div>
@@ -231,7 +231,7 @@ function ResumeDetail({ id }: { id: string }) {
       {tab === "cover" && (
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="space-y-4">
-            <h2 className="font-semibold">Cover letter</h2>
+            <h2 className="font-medium">Cover letter</h2>
             <Field label="Job description" id="jd3"><Textarea id="jd3" value={jd} onChange={(e) => setJd(e.target.value)} className="min-h-[220px]" /></Field>
             <InlineError error={cover.error} />
             <Button loading={cover.isPending} disabled={jd.length < 30} onClick={() => cover.mutate()}><Sparkles className="h-4 w-4" />Write cover letter</Button>

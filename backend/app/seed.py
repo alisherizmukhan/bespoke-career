@@ -1,6 +1,7 @@
 """Idempotent seed: plans, knowledge base, admin (ADMIN_EMAIL / ADMIN_PASSWORD) and an optional demo account.
 
 Demo login (SEED_DEMO_DATA=true): alex@demo.bespoke.app / DemoBespoke2026
+Test logins (free / plus / pro): jordan@, maya@, priya@demo.bespoke.app / TestBespoke2026
 """
 from datetime import date, timedelta
 
@@ -58,8 +59,52 @@ def run() -> None:
             _demo(db)
             db.commit()
             print("seed: demo account created")
+        if settings.seed_demo_data:
+            _test_users(db)
     finally:
         db.close()
+
+
+TEST_PW = "TestBespoke2026"
+TEST_USERS = [
+    # email, name, plan, profile type, city, title, target, industry, years, seniority, skills
+    ("jordan@demo.bespoke.app", "Jordan Lee", "free", "recent_graduate", "Boston, MA", "Marketing Intern",
+     "Marketing Coordinator", "marketing", 1, "entry", ["SEO", "Content strategy", "Google Analytics", "Canva"]),
+    ("maya@demo.bespoke.app", "Maya Chen", "plus", "career_changer", "Chicago, IL", "Operations Specialist",
+     "Data Analyst", "technology", 5, "mid", ["SQL", "Excel", "Tableau", "Python"]),
+    ("priya@demo.bespoke.app", "Priya Patel", "pro", "professional", "San Francisco, CA", "Senior Product Manager",
+     "Group Product Manager", "business", 9, "senior", ["Product management", "Roadmap", "User research", "SQL", "A/B testing"]),
+]
+
+
+def _test_users(db) -> None:
+    """Three test accounts on different plans, each with a few tracked applications."""
+    from .models import Subscription
+
+    now = utcnow()
+    for email, name, plan, ptype, city, title, target, industry, years, seniority, skills in TEST_USERS:
+        if db.scalar(select(User).where(User.email == email)):
+            continue
+        u = User(email=email, password_hash=hash_password(TEST_PW), email_verified_at=now)
+        db.add(u)
+        db.flush()
+        db.add(UserProfile(user_id=u.id, full_name=name, profile_type=ptype, country="United States", city=city,
+                           current_title=title, target_title=target, industry=industry, years_experience=years,
+                           seniority=seniority, employment_types=["full-time"], currency="USD", onboarding_completed=True,
+                           career_goals=f"Move into a {target.lower()} role."))
+        for s in skills:
+            db.add(UserSkill(user_id=u.id, skill=s, verified=True))
+        if plan != "free":
+            db.add(Subscription(user_id=u.id, plan_slug=plan, status="active", provider="test",
+                                current_period_end=now + timedelta(days=30)))
+        for i, (company, status) in enumerate([("Northwind", "applied"), ("Contoso", "screening"), ("Fabrikam", "interested")]):
+            a = JobApplication(user_id=u.id, company_name=company, job_title=target, status=status, location=city,
+                               applied_at=(now - timedelta(days=4 + i * 3)).date() if status != "interested" else None)
+            db.add(a)
+            db.flush()
+            db.add(ApplicationEvent(application_id=a.id, type="created", to_status=status))
+        print(f"seed: test user {email} ({plan})")
+    db.commit()
 
 
 def _demo(db) -> None:

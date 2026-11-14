@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Bookmark, BookmarkCheck, Building2, Clock, ExternalLink, KanbanSquare, MapPin, Wallet } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkCheck, Building2, Clock, ExternalLink, KanbanSquare, MapPin, Wallet } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
@@ -32,12 +32,12 @@ export function JobDetail({ id, base }: { id: string; base: string }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div className="space-y-5">
-        <Link href={base} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-700"><ArrowLeft className="h-4 w-4" /> All jobs</Link>
+        <Link href={base} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-700"><ArrowLeft className="h-4 w-4" /> All jobs</Link>
         <div className="card p-6">
           <div className="flex gap-4">
             <CompanyAvatar name={j.company} logo={j.company_logo} size={56} />
             <div className="min-w-0">
-              <h1 className="font-display text-2xl font-bold leading-tight">{j.title}</h1>
+              <h1 className="text-[22px] font-medium leading-tight">{j.title}</h1>
               <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-muted">
                 {j.company && <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" />{j.company}</span>}
                 {j.location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" />{j.location}</span>}
@@ -54,14 +54,14 @@ export function JobDetail({ id, base }: { id: string; base: string }) {
           </div>
         </div>
         <div className="card p-6">
-          <h2 className="mb-3 font-semibold">About the role</h2>
+          <h2 className="mb-3 font-medium">About the role</h2>
           {j.description ? <div className="whitespace-pre-line text-[15px] leading-7 text-ink/90">{j.description}</div>
             : <p className="text-sm text-ink-muted">The full description is on the original posting.</p>}
           {j.contacts?.length > 0 && <p className="mt-4 text-sm text-ink-muted">Contacts: {j.contacts.join(", ")}</p>}
         </div>
         {j.similar?.length > 0 && (
           <div>
-            <h2 className="mb-3 font-semibold">Similar jobs</h2>
+            <h2 className="mb-3 font-medium">Similar jobs</h2>
             <div className="space-y-3">{j.similar.map((s: any) => <JobCard key={s.id} job={s} base={base} />)}</div>
           </div>
         )}
@@ -82,7 +82,7 @@ export function JobDetail({ id, base }: { id: string; base: string }) {
           <InlineError error={track.error || save.error} />
         </div>
         <div className="card p-5 text-sm">
-          <p className="font-semibold">Tailor your resume</p>
+          <p className="font-medium">Tailor your resume</p>
           <p className="mt-1 text-ink-muted">Check how your resume matches this job and generate a tailored version.</p>
           <Button variant="soft" size="sm" className="mt-3" href={user ? `/app/resumes?jd=${encodeURIComponent(id)}` : "/register"}>Check my match</Button>
         </div>

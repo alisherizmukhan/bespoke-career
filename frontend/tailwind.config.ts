@@ -1,30 +1,41 @@
 import type { Config } from "tailwindcss";
 
-// Tokens from the brand book (violet / lavender / white / ink), adapted for Bespoke.
+/**
+ * Direction: steady, exact, quietly encouraging — the job-search desk (offer letters, salary tables, ink on paper).
+ * Surfaces are warm paper neutrals; the dark hero uses an ink ramp. The brand violet is the only accent.
+ * Legacy token names (lavender/violet-100..400) are kept so every component inherits the neutral ramp.
+ */
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        violet: { 100: "#EBE4FD", 200: "#DCD0FA", 300: "#C9B8F7", 400: "#A68BEE", 600: "#6C47D9", 700: "#4A2DB5", 900: "#1E1645" },
-        lavender: { 50: "#F7F4FE", 100: "#EFEAFC", 200: "#E4DCF8" },
-        ink: { DEFAULT: "#15122A", muted: "#5E5873" },
-        line: "#ECE8F5",
-        success: { DEFAULT: "#24663F", soft: "#E4F2E8" },
-        warning: { DEFAULT: "#8A5300", soft: "#FCEFD9" },
-        danger: { DEFAULT: "#A3221B", soft: "#FBE7E5" },
-        rating: "#E0A800",
+        // accent (brand violet) + neutral steps under the old tint names
+        violet: { 100: "#efede8", 200: "#dedad2", 300: "#c9c4ba", 400: "#a8a297", 600: "#6c47d9", 700: "#5634b8", 900: "#11131b" },
+        lavender: { 50: "#f7f6f3", 100: "#efede8", 200: "#e4e1da" },
+        accent: { DEFAULT: "#6c47d9", ink: "#5634b8", soft: "#efeafc" },
+        ink: { DEFAULT: "#1c1a17", muted: "#54504a", faint: "#6e6860" },
+        night: { 950: "#07080d", 900: "#0b0d14", 800: "#11141c", 700: "#1a1e28", 600: "#272c38", line: "rgba(238,240,245,0.08)", text: "#f2f4f8", soft: "#b8bdca", mute: "#8e95a6" },
+        line: "#e7e4dd",
+        success: { DEFAULT: "#1f6b43", soft: "#e6f0e9" },
+        warning: { DEFAULT: "#8a5300", soft: "#f6ecdc" },
+        danger: { DEFAULT: "#a3221b", soft: "#f7e6e4" },
+        rating: "#b98900",
       },
       fontFamily: {
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
-        sans: ["var(--font-sans)", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        display: ['"Instrument Sans Variable"', '"Instrument Sans"', "system-ui", "sans-serif"],
+        sans: ['"Instrument Sans Variable"', '"Instrument Sans"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"],
       },
-      borderRadius: { sm: "8px", md: "12px", lg: "18px", xl: "28px" },
+      // Slightly heavier than the defaults so text stays comfortable to read
+      fontWeight: { normal: "450", medium: "550", semibold: "620", bold: "680" },
+      borderRadius: { sm: "6px", md: "10px", lg: "14px", xl: "20px" },
       boxShadow: {
-        card: "0 1px 2px rgba(36,27,58,0.05), 0 6px 20px rgba(36,27,58,0.05)",
-        pop: "0 12px 40px rgba(36,27,58,0.16)",
-        float: "0 18px 50px rgba(74,45,181,0.12)",
+        card: "0 1px 2px rgba(0,0,0,0.05)",
+        pop: "0 8px 24px rgba(0,0,0,0.08)",
+        float: "0 24px 48px rgba(7,8,13,0.18)",
       },
+      transitionTimingFunction: { out: "cubic-bezier(0.22, 1, 0.36, 1)" },
       maxWidth: { content: "1200px" },
     },
   },

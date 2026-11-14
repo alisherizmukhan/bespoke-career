@@ -19,9 +19,9 @@ export default function AiUsage() {
       </Card>
       <Card className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">
-          <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Task", "Status", "Calls", "Input tokens", "Output tokens", "Avg latency"].map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Task", "Status", "Calls", "Input tokens", "Output tokens", "Avg latency"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
           <tbody>{d.rows.length ? d.rows.map((r: any) => (
-            <tr key={r.task + r.status} className="border-b border-line last:border-0"><td className="px-4 py-3 font-medium">{r.task}</td><td className="px-4 py-3"><Badge tone={r.status === "ok" ? "success" : r.status === "refused" ? "warning" : "danger"}>{r.status}</Badge></td><td className="tabular px-4 py-3">{r.calls}</td><td className="tabular px-4 py-3">{r.input_tokens.toLocaleString()}</td><td className="tabular px-4 py-3">{r.output_tokens.toLocaleString()}</td><td className="tabular px-4 py-3">{(r.avg_latency_ms / 1000).toFixed(1)}s</td></tr>
+            <tr key={r.task + r.status} className="border-b border-line last:border-0"><td className="px-4 py-3 font-medium">{r.task}</td><td className="px-4 py-3"><Badge tone={r.status === "ok" ? "success" : r.status === "refused" ? "warning" : "danger"}>{r.status}</Badge></td><td className="tabular px-4 py-3">{r.calls}</td><td className="tabular px-4 py-3">{r.input_tokens.toLocaleString("en-US")}</td><td className="tabular px-4 py-3">{r.output_tokens.toLocaleString("en-US")}</td><td className="tabular px-4 py-3">{(r.avg_latency_ms / 1000).toFixed(1)}s</td></tr>
           )) : <tr><td className="px-4 py-6 text-ink-muted" colSpan={6}>No AI calls yet.</td></tr>}</tbody>
         </table>
       </Card>

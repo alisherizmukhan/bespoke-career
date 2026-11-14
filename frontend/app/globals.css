@@ -2,21 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-  --font-sans: "Inter Variable", "Inter";
-  --font-display: "Plus Jakarta Sans";
-}
-html, body { background: #F7F4FE; color: #15122A; }
-body { font-family: var(--font-sans), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-*:focus-visible { outline: 2px solid #6C47D9; outline-offset: 2px; border-radius: 6px; }
+:root { color-scheme: light; }
+html, body { background: #f7f6f3; color: #1c1a17; }
+body { font-family: "Instrument Sans Variable", "Instrument Sans", system-ui, sans-serif; font-weight: 450; -webkit-font-smoothing: antialiased; }
+*:focus-visible { outline: 2px solid #6c47d9; outline-offset: 2px; border-radius: 6px; }
 .tabular { font-variant-numeric: tabular-nums; }
+::selection { background: #e6dffb; }
 
 @layer components {
-  .card { @apply bg-white border border-line rounded-lg; }
-  .eyebrow { @apply inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-violet-700; }
-  .h-display { @apply font-display font-extrabold tracking-[-0.03em] text-ink; }
-  .link { @apply text-violet-600 hover:text-violet-700 underline-offset-2 hover:underline; }
+  .card { @apply rounded-lg border border-line bg-white; }
+  /* Quiet context line above a heading: sentence case, no pill, no tracking */
+  .eyebrow { @apply inline-flex items-center gap-2 font-mono text-[12px] font-medium text-ink-faint; }
+  .h-display { @apply font-display font-semibold tracking-[-0.025em] text-ink; }
+  .link { @apply text-accent-ink underline-offset-2 hover:underline; }
   .skeleton { @apply animate-pulse rounded-md bg-lavender-100; }
   .prose-plain p { @apply mb-3; }
 }

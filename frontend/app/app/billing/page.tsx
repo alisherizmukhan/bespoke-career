@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check } from "@/components/icons";
 import { useState } from "react";
 import { Badge, Button, Card, ErrorState, InlineError, PageHeader, Skeleton, Tabs } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -30,7 +30,7 @@ export default function Billing() {
       <Card className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex-1">
           <p className="text-sm text-ink-muted">Current plan</p>
-          <p className="font-display text-2xl font-bold">{sub.data.plan.name}</p>
+          <p className="text-[22px] font-medium">{sub.data.plan.name}</p>
           {s && <p className="text-sm text-ink-muted">{s.cancel_at_period_end ? `Ends on ${date(s.current_period_end)}` : `Renews ${date(s.current_period_end)} · billed ${s.interval}ly`}</p>}
         </div>
         {s && (s.cancel_at_period_end
@@ -41,15 +41,15 @@ export default function Billing() {
       <InlineError error={change.error || cancel.error} />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {(plans.data?.plans || []).map((p: any) => (
-          <Card key={p.slug} className={`flex flex-col ${p.slug === cur ? "ring-2 ring-violet-600" : ""}`}>
-            <div className="flex items-center justify-between"><p className="font-display text-lg font-bold">{p.name}</p>{p.slug === cur && <Badge tone="info">Current</Badge>}</div>
-            <p className="mt-2"><span className="tabular font-display text-3xl font-extrabold">${interval === "year" ? p.price_year : p.price_month}</span><span className="text-sm text-ink-muted">/{interval === "year" ? "yr" : "mo"}</span></p>
+          <Card key={p.slug} className={`flex flex-col ${p.slug === cur ? "border-ink" : ""}`}>
+            <div className="flex items-center justify-between"><p className="text-[15px] font-medium">{p.name}</p>{p.slug === cur && <Badge tone="info">Current</Badge>}</div>
+            <p className="mt-2"><span className="tabular text-[32px] font-medium leading-none">${interval === "year" ? p.price_year : p.price_month}</span><span className="text-sm text-ink-muted">/{interval === "year" ? "yr" : "mo"}</span></p>
             <ul className="mt-4 flex-1 space-y-2 text-[13px]">{p.features.map((f: string) => <li key={f} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />{f}</li>)}</ul>
             {p.slug !== cur && p.slug !== "free" && <Button className="mt-5" loading={change.isPending && change.variables === p.slug} onClick={() => change.mutate(p.slug)}>Switch to {p.name}</Button>}
           </Card>
         ))}
       </div>
-      <h2 className="mb-3 mt-8 text-lg font-semibold">Billing history</h2>
+      <h2 className="mb-3 mt-8 text-lg font-medium">Billing history</h2>
       <Card className="!p-0">
         {history.data?.length ? (
           <table className="w-full text-sm"><tbody>{history.data.map((h: any) => (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Play, Plus, RefreshCw } from "lucide-react";
+import { Play, Plus, RefreshCw } from "@/components/icons";
 import { useState } from "react";
 import { Badge, Button, Card, ErrorState, Field, InlineError, Input, Modal, PageHeader, Select, Skeleton, Textarea } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -35,13 +35,13 @@ export default function Sources() {
   const totals = q.data.sources.reduce((a: number, s: any) => a + s.active_jobs, 0);
   return (
     <div>
-      <PageHeader title="Job sources" subtitle={`${q.data.sources.length} sources · ${totals.toLocaleString()} active jobs · runs automatically every hour; each source respects its own interval.`}
+      <PageHeader title="Job sources" subtitle={`${q.data.sources.length} sources · ${totals.toLocaleString("en-US")} active jobs · runs automatically every hour; each source respects its own interval.`}
         actions={<><Button variant="secondary" onClick={() => setAdding(true)}><Plus className="h-4 w-4" />Add source</Button><Button loading={run.isPending} onClick={() => run.mutate(undefined)}><Play className="h-4 w-4" />Run all now</Button></>} />
       {run.isSuccess && <p className="mb-4 rounded-md bg-success-soft px-4 py-2 text-sm text-success">Ingestion started in the background. Statuses refresh automatically.</p>}
       <InlineError error={run.error} />
       <Card className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[860px] text-sm">
-          <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Source", "Provider", "Status", "Last run", "Found / new", "Active jobs", ""].map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+          <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Source", "Provider", "Status", "Last run", "Found / new", "Active jobs", ""].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
           <tbody>{q.data.sources.map((s: any) => (
             <tr key={s.id} className="border-b border-line last:border-0">
               <td className="px-4 py-3"><p className="font-medium">{s.name}</p><p className="max-w-[260px] truncate text-xs text-ink-muted">{JSON.stringify(s.config)}</p></td>
@@ -50,7 +50,7 @@ export default function Sources() {
                 {s.last_error && <p className="mt-1 max-w-[240px] text-xs text-danger" title={s.last_error}>{s.last_error.slice(0, 90)}</p>}</td>
               <td className="px-4 py-3 text-ink-muted">{s.last_run_at ? ago(s.last_run_at) : "—"}</td>
               <td className="tabular px-4 py-3">{s.last_found} / {s.last_created}</td>
-              <td className="tabular px-4 py-3 font-semibold">{s.active_jobs}</td>
+              <td className="tabular px-4 py-3 font-medium">{s.active_jobs}</td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
                 <Button size="sm" variant="ghost" onClick={() => run.mutate(s.id)} aria-label="Run now"><RefreshCw className="h-4 w-4" /></Button>
                 <Button size="sm" variant="ghost" onClick={() => toggle.mutate(s)}>{s.is_active ? "Disable" : "Enable"}</Button>
@@ -59,7 +59,7 @@ export default function Sources() {
           ))}</tbody>
         </table>
       </Card>
-      <h2 className="mb-3 mt-8 font-semibold">Recent runs</h2>
+      <h2 className="mb-3 mt-8 font-medium">Recent runs</h2>
       <Card className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm"><tbody>{q.data.recent_runs.map((r: any, i: number) => (
           <tr key={i} className="border-b border-line last:border-0"><td className="px-4 py-2.5">{r.source}</td><td className="px-4 py-2.5">{r.status === "success" ? <Badge tone="success">OK</Badge> : r.status === "failed" ? <Badge tone="danger">Failed</Badge> : <Badge tone="info">{r.status}</Badge>}</td><td className="tabular px-4 py-2.5 text-ink-muted">{r.fetched} fetched · {r.created} new · {r.updated} updated</td><td className="px-4 py-2.5 text-ink-muted">{ago(r.started_at)}</td></tr>

@@ -21,12 +21,12 @@ export function AuthLayout({ title, subtitle, children }: { title: string; subti
           <div className="mt-8">{children}</div>
         </div>
       </div>
-      <div className="relative hidden overflow-hidden bg-gradient-to-b from-lavender-100 to-violet-200 lg:block">
+      <div className="relative hidden overflow-hidden bg-night-900 text-night-text lg:block">
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="max-w-md">
-            <span className="eyebrow">Your career, thoughtfully built</span>
-            <p className="h-display mt-6 text-[40px] leading-[1.05]">Resumes, salary data and jobs — <span className="text-violet-600">connected.</span></p>
-            <ul className="mt-8 space-y-3 text-[15px] text-ink/80">
+            <p className="font-mono text-[12px] text-night-mute">Bespoke</p>
+            <p className="mt-4 font-display font-semibold text-[44px] leading-[1.05]">Your salary range, resume and applications in one place</p>
+            <ul className="mt-8 space-y-3 text-[15px] text-night-soft">
               <li>• Profession-aware resumes that never invent facts</li>
               <li>• Salary ranges from live postings with disclosed pay</li>
               <li>• An AI assistant grounded in your own search</li>
@@ -65,7 +65,7 @@ export function LoginForm() {
       <div className="text-right"><Link href="/forgot-password" className="link text-sm">Forgot password?</Link></div>
       <InlineError error={err} />
       <Button type="submit" loading={isSubmitting} className="w-full" size="lg">Log in</Button>
-      <p className="text-center text-sm text-ink-muted">New to Bespoke? <Link href="/register" className="link font-semibold">Create an account</Link></p>
+      <p className="text-center text-sm text-ink-muted">New to Bespoke? <Link href="/register" className="link font-medium">Create an account</Link></p>
     </form>
   );
 }
@@ -107,7 +107,7 @@ export function RegisterForm() {
       {errors.accept_terms && <p className="text-xs font-medium text-danger">{errors.accept_terms.message}</p>}
       <InlineError error={err} />
       <Button type="submit" loading={isSubmitting} className="w-full" size="lg">Create free account</Button>
-      <p className="text-center text-sm text-ink-muted">Already have an account? <Link href="/login" className="link font-semibold">Log in</Link></p>
+      <p className="text-center text-sm text-ink-muted">Already have an account? <Link href="/login" className="link font-medium">Log in</Link></p>
     </form>
   );
 }

@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 // Fonts are self-hosted (bundled at build time) so builds never depend on Google Fonts being reachable.
-import "@fontsource-variable/inter";
-import "@fontsource/plus-jakarta-sans/600.css";
-import "@fontsource/plus-jakarta-sans/700.css";
-import "@fontsource/plus-jakarta-sans/800.css";
+import "@fontsource-variable/instrument-sans";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
 import { Providers } from "@/lib/auth";
 import "./globals.css";
 
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
   description: "AI-powered career intelligence: resumes that pass ATS, real salary data, live jobs and an assistant that knows your search.",
   icons: { icon: "/favicon.svg" },
 };
-export const viewport: Viewport = { themeColor: "#6C47D9", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#0b0d14", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

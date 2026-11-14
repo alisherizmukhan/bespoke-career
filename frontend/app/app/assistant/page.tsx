@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquarePlus, Send, Sparkles, Trash2 } from "lucide-react";
+import { MessageSquarePlus, Send, Sparkles, Trash2 } from "@/components/icons";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Button, InlineError, cx } from "@/components/ui";
@@ -54,7 +54,7 @@ function Assistant() {
         <div className="flex-1 overflow-y-auto p-2">
           {(convs.data || []).map((c: any) => (
             <div key={c.id} className={cx("group flex items-center rounded-md", cid === c.id ? "bg-violet-100" : "hover:bg-lavender-50")}>
-              <button onClick={() => open(c.id)} className="min-w-0 flex-1 px-3 py-2 text-left"><p className="truncate text-sm font-medium">{c.title}</p><p className="text-[11px] text-ink-muted">{ago(c.updated_at)}</p></button>
+              <button onClick={() => open(c.id)} className="min-w-0 flex-1 px-3 py-2 text-left"><p className="truncate text-sm font-medium">{c.title}</p><p className="text-[12px] text-ink-muted">{ago(c.updated_at)}</p></button>
               <button onClick={() => del.mutate(c.id)} className="mr-1 hidden rounded p-1 text-ink-muted hover:text-danger group-hover:block" aria-label="Delete conversation"><Trash2 className="h-3.5 w-3.5" /></button>
             </div>
           ))}
@@ -80,7 +80,7 @@ function Assistant() {
                   </div>
                 </div>
               ))}
-              {send.isPending && <div className="flex"><div className="rounded-lg bg-lavender-50 px-4 py-3"><span className="inline-flex gap-1">{[0, 1, 2].map((i) => <span key={i} className="h-2 w-2 animate-bounce rounded-full bg-violet-400" style={{ animationDelay: `${i * 0.15}s` }} />)}</span></div></div>}
+              {send.isPending && <div className="flex"><div className="rounded-lg bg-lavender-50 px-4 py-3"><span className="inline-flex gap-1">{[0, 1, 2].map((i) => <span key={i} className="h-2 w-2 animate-pulse rounded-full bg-violet-300" style={{ animationDelay: `${i * 0.15}s` }} />)}</span></div></div>}
               <div ref={end} />
             </div>
           )}
@@ -94,7 +94,7 @@ function Assistant() {
                 className="max-h-40 min-h-[48px] flex-1 resize-none rounded-md border border-violet-200 px-4 py-3 text-sm focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-100" />
               <Button type="submit" size="lg" loading={send.isPending} aria-label="Send"><Send className="h-4 w-4" /></Button>
             </form>
-            <p className="mt-2 text-center text-[11px] text-ink-muted">AI answers can be wrong. Check important details before you act on them.</p>
+            <p className="mt-2 text-center text-[12px] text-ink-muted">AI answers can be wrong. Check important details before you act on them.</p>
           </div>
         </div>
       </section>
