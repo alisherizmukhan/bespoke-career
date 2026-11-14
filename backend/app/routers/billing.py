@@ -84,9 +84,20 @@ def change_plan(body: CheckoutIn, user: User = Depends(get_current_user), db: Se
     plan = db.scalar(select(Plan).where(Plan.slug == body.plan, Plan.is_active.is_(True)))
     if not plan:
         raise HTTPException(404, "Plan not found.")
-    prev = s.plan_slug
+    prev, prev_interval = s.plan_slug, s.interval
+    if prev == plan.slug and prev_interval == body.interval:
+        raise HTTPException(409, "You're already on this plan.")
     s.plan_slug, s.interval, s.cancel_at_period_end = plan.slug, body.interval, False
-    audit(db, user.id, "billing.change_plan", "subscription", s.id, from_plan=prev, to_plan=plan.slug)
+    if prev_interval != body.interval:
+        # A new billing interval starts a new period (test mode records the charge)
+        now = utcnow()
+        s.current_period_start = now
+        s.current_period_end = now + (timedelta(days=365) if body.interval == "year" else timedelta(days=30))
+        amount = plan.price_year_cents if body.interval == "year" else plan.price_month_cents
+        db.add(Payment(user_id=user.id, subscription_id=s.id, amount_cents=amount,
+                       description=f"{plan.name} ({body.interval}ly) — test mode", is_test=True))
+    audit(db, user.id, "billing.change_plan", "subscription", s.id, from_plan=prev, to_plan=plan.slug,
+          from_interval=prev_interval, to_interval=body.interval)
     notify(db, user.id, "subscription", f"Plan changed to {plan.name}", "Test mode: no real payment was taken.", "/app/billing")
     db.commit()
     return {"ok": True, "test_mode": True}

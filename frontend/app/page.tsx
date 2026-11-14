@@ -5,6 +5,7 @@ import {
   ArrowRight, Bell, Check, FileText, GraduationCap, KanbanSquare, MessageSquare, Target, Wallet, Wand2,
 } from "@/components/icons";
 import Link from "next/link";
+import { PricingGrid } from "@/components/pricing";
 import { PublicShell } from "@/components/public";
 import { Button, RangeMarker, ScoreRing, cx } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -219,19 +220,7 @@ export default function Landing() {
         <div className="mx-auto max-w-content px-4 py-24 sm:px-6">
           <h2 className="h-display text-[36px] sm:text-[44px]">Pricing</h2>
           <p className="mt-2 text-ink-muted">Start free. Upgrade when your search picks up.</p>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {(plans.data?.plans || []).map((p: any) => (
-              <div key={p.slug} className={cx("flex flex-col rounded-lg border bg-white p-6", p.slug === "pro" ? "border-ink" : "border-line")}>
-                <p className="text-[15px] font-medium">{p.name}</p>
-                <p className="mt-1 min-h-[40px] text-[13px] text-ink-muted">{p.tagline}</p>
-                <p className="mt-4"><span className="tabular text-[36px] font-medium leading-none">${p.price_month}</span><span className="text-ink-muted"> / month</span></p>
-                <ul className="mt-6 flex-1 space-y-2.5 text-[13px] text-ink-muted">
-                  {p.features.map((x: string) => <li key={x} className="flex gap-2"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink" />{x}</li>)}
-                </ul>
-                <Button href="/register" variant={p.slug === "pro" ? "primary" : "secondary"} className="mt-6">{p.price_month ? `Choose ${p.name}` : "Start free"}</Button>
-              </div>
-            ))}
-          </div>
+          <div className="mt-8"><PricingGrid plans={plans.data?.plans || []} /></div>
         </div>
       </section>
 

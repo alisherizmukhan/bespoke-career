@@ -25,8 +25,14 @@ def run() -> None:
     db = SessionLocal()
     try:
         for d in PLAN_DEFAULTS:
-            if not db.scalar(select(Plan).where(Plan.slug == d["slug"])):
+            p = db.scalar(select(Plan).where(Plan.slug == d["slug"]))
+            if not p:
                 db.add(Plan(**d))
+            elif p.price_month_cents and p.price_year_cents == p.price_month_cents * 10 \
+                    and p.price_month_cents == d["price_month_cents"]:
+                # Move untouched plans from the old "2 months free" yearly price to the current annual discount;
+                # prices an admin changed by hand are left alone.
+                p.price_year_cents = d["price_year_cents"]
         if not db.scalar(select(Industry.id).limit(1)):
             ids = {}
             for i, (slug, name) in enumerate(INDUSTRIES):
