@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { rememberPlanIntent } from "./pricing";
 import { Button, Field, InlineError, Input, Logo } from "./ui";
 
 export function AuthLayout({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
@@ -87,6 +88,8 @@ export function RegisterForm() {
     try {
       const r = await api("/auth/register", { body: v });
       signIn(r.access_token, r.user);
+      const qs = new URLSearchParams(window.location.search);
+      rememberPlanIntent(qs.get("plan"), qs.get("interval"));
       if (r.dev_verification_url) sessionStorage.setItem("bespoke_verify", r.dev_verification_url);
       router.push("/verify-email?sent=1");
     } catch (e) {

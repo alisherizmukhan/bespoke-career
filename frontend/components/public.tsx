@@ -4,6 +4,7 @@ import { Menu, X } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { useContent } from "@/lib/content";
 import { Button, Logo, cx } from "./ui";
 
 const NAV = [
@@ -18,8 +19,15 @@ export function PublicHeader({ dark }: { dark?: boolean }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const link = dark ? "text-night-soft hover:text-night-text" : "text-ink-muted hover:text-ink";
+  const a = useContent().announcement;
   return (
     <header className={cx("z-40", dark ? "absolute inset-x-0 top-0" : "sticky top-0 border-b border-line bg-lavender-50")}>
+      {a?.active && a.text && (
+        <div className={cx("px-4 py-2 text-center text-[13px]", dark ? "border-b border-night-line bg-night-800 text-night-text" : "bg-ink text-white")}>
+          {a.text}
+          {a.link && <Link href={a.link} className="ml-2 font-medium underline underline-offset-2">{a.link_label || "Learn more"}</Link>}
+        </div>
+      )}
       <div className="mx-auto flex h-16 max-w-content items-center justify-between px-4 sm:px-6">
         <Logo light={dark} />
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">

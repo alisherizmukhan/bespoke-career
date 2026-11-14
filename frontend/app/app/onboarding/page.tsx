@@ -1,5 +1,6 @@
 "use client";
 
+import { takePlanIntent } from "@/components/pricing";
 import { useQuery } from "@tanstack/react-query";
 import { Check } from "@/components/icons";
 import { useRouter } from "next/navigation";
@@ -31,7 +32,7 @@ export default function Onboarding() {
     setBusy(true); setErr(null);
     try {
       await api("/profile", { method: "PATCH", body: { ...toPayload(data), ...(finish ? { onboarding_completed: true } : {}) } });
-      if (finish) { await refresh(); router.push("/app?welcome=1"); } else setStep((s) => s + 1);
+      if (finish) { await refresh(); const intent = takePlanIntent(); router.push(intent ? `/app/billing?plan=${intent.plan}&interval=${intent.interval}` : "/app?welcome=1"); } else setStep((s) => s + 1);
     } catch (e) { setErr(e); } finally { setBusy(false); }
   };
 

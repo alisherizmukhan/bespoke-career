@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .config import get_settings
-from .routers import admin, applications, auth, billing, jobs, misc, profile, resumes, salary_assistant
+from .routers import admin, applications, auth, billing, crm, jobs, misc, profile, resumes, salary_assistant
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("bespoke")
@@ -49,7 +49,7 @@ def health():
 
 
 api = APIRouter(prefix="/api/v1")
-for r in (auth, profile, jobs, applications, resumes, salary_assistant, billing, misc, admin):
+for r in (auth, profile, jobs, applications, resumes, salary_assistant, billing, misc, admin, crm):
     api.include_router(r.router)
 app.include_router(api)
 

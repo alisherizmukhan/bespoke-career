@@ -4,7 +4,8 @@ import clsx from "clsx";
 import { AlertCircle, ArrowUpRight, Inbox, Loader2, X } from "@/components/icons";
 import Link from "next/link";
 import { forwardRef, useEffect } from "react";
-import { ApiError } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { ApiError, api } from "@/lib/api";
 
 export const cx = clsx;
 
@@ -128,12 +129,19 @@ export function ErrorState({ error, retry }: { error: unknown; retry?: () => voi
 }
 
 export function UpgradeNotice({ error }: { error: unknown }) {
-  if (!(error instanceof ApiError) || error.status !== 402) return null;
+  const is402 = error instanceof ApiError && error.status === 402;
+  const plans = useQuery({ queryKey: ["plans"], queryFn: () => api("/billing/plans"), enabled: is402, staleTime: 600_000 });
+  if (!is402) return null;
+  const pro = plans.data?.plans?.find((p: any) => p.slug === "pro");
+  const perMonth = pro ? pro.price_year / 12 : null;
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-line bg-white p-4 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-lg border border-accent/40 bg-accent-soft p-4 sm:flex-row sm:items-center">
       <ArrowUpRight className="h-5 w-5 shrink-0 text-accent-ink" />
-      <p className="flex-1 text-sm text-ink">{error.message}</p>
-      <Button size="sm" href="/app/billing">See plans</Button>
+      <div className="flex-1">
+        <p className="text-sm font-medium text-ink">{(error as ApiError).message}</p>
+        {perMonth !== null && <p className="mt-0.5 text-[13px] text-ink-muted">Career Pro lifts this limit from ${Number.isInteger(perMonth) ? perMonth : perMonth.toFixed(2)}/mo billed yearly. Cancel anytime.</p>}
+      </div>
+      <Button size="sm" href="/app/billing?plan=pro&interval=year">Upgrade to Pro</Button>
     </div>
   );
 }

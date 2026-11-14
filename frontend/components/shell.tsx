@@ -1,10 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Activity, Bell, Briefcase, CreditCard, FileText, Gauge, KanbanSquare, LayoutDashboard, LogOut, Menu, MessageSquare,
-  ScrollText, Search, Settings, Shield, Sparkles, User as UserIcon, Users, Wallet, X, BookOpen, Rss,
-} from "@/components/icons";
+import { Activity, Bell, BookOpen, Briefcase, CheckCircle2, CreditCard, Download, FileText, Gauge, KanbanSquare, LayoutDashboard, LogOut, Menu, MessageSquare, Rss, ScrollText, Search, Settings, Shield, Sparkles, User as UserIcon, UserCheck, Users, Wallet, X } from "@/components/icons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -21,11 +18,18 @@ const APP_NAV = [
 ];
 
 const ADMIN_NAV = [
-  { group: "Admin", items: [
-    { href: "/admin", label: "Metrics", icon: Gauge }, { href: "/admin/users", label: "Users", icon: Users },
-    { href: "/admin/sources", label: "Job sources", icon: Rss }, { href: "/admin/plans", label: "Plans & limits", icon: CreditCard },
-    { href: "/admin/knowledge", label: "Knowledge", icon: BookOpen }, { href: "/admin/ai", label: "AI usage", icon: Activity },
-    { href: "/admin/audit", label: "Audit log", icon: ScrollText },
+  { group: "Customers", items: [
+    { href: "/admin/crm", label: "CRM", icon: UserCheck }, { href: "/admin/tasks", label: "Tasks", icon: CheckCircle2 },
+    { href: "/admin/users", label: "Users", icon: Users },
+  ] },
+  { group: "Content", items: [
+    { href: "/admin/content", label: "Site content", icon: FileText }, { href: "/admin/jobs", label: "Jobs", icon: Briefcase },
+    { href: "/admin/plans", label: "Plans & limits", icon: CreditCard }, { href: "/admin/knowledge", label: "Knowledge", icon: BookOpen },
+    { href: "/admin/sources", label: "Job sources", icon: Rss },
+  ] },
+  { group: "System", items: [
+    { href: "/admin", label: "Metrics", icon: Gauge }, { href: "/admin/ai", label: "AI usage", icon: Activity },
+    { href: "/admin/audit", label: "Audit log", icon: ScrollText }, { href: "/admin/exports", label: "Exports", icon: Download },
   ] },
 ];
 

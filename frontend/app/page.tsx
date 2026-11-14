@@ -9,6 +9,7 @@ import { PricingGrid } from "@/components/pricing";
 import { PublicShell } from "@/components/public";
 import { Button, RangeMarker, ScoreRing, cx } from "@/components/ui";
 import { api } from "@/lib/api";
+import { useContent } from "@/lib/content";
 import { money } from "@/lib/format";
 
 type Hist = { count: number; median: number | null; p25: number | null; p75: number | null; start: number; step: number; bins: number[] };
@@ -113,6 +114,7 @@ export default function Landing() {
   const facets = useQuery({ queryKey: ["facets"], queryFn: () => api("/jobs/facets") });
   const hist = useQuery({ queryKey: ["salary-hist"], queryFn: () => api<Hist>("/jobs/salary-histogram") });
   const plans = useQuery({ queryKey: ["plans"], queryFn: () => api("/billing/plans") });
+  const hero = useContent().landing_hero;
   const f = facets.data;
 
   return (
@@ -125,13 +127,13 @@ export default function Landing() {
             {f ? `${f.total.toLocaleString("en-US")} open US jobs · ${f.with_salary.toLocaleString("en-US")} with posted pay · updated hourly` : "Open US jobs, updated hourly"}
           </p>
           <h1 className="mx-auto mt-6 max-w-3xl font-display font-semibold text-[44px] leading-[1.04] tracking-[-0.035em] sm:text-[68px]">
-            Know what your role pays before you apply
+            {hero?.headline || "Know what your role pays before you apply"}
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-[18px] leading-[1.6] text-night-soft">
-            Bespoke reads live US job postings so you can see your market pay, tailor your resume to the posting and keep every application moving.
+            {hero?.subhead || "Bespoke reads live US job postings so you can see your market pay, tailor your resume to the posting and keep every application moving."}
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
-            <Button href="/register" size="lg" className="!bg-night-text !text-night-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] hover:!bg-white">Create a free account</Button>
+            <Button href="/register" size="lg" className="!bg-night-text !text-night-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] hover:!bg-white">{hero?.cta || "Create a free account"}</Button>
             <Link href="/jobs" className="inline-flex items-center gap-1.5 text-[15px] text-night-soft transition-colors duration-150 hover:text-night-text">
               Browse jobs <ArrowRight className="h-4 w-4" />
             </Link>
@@ -221,6 +223,7 @@ export default function Landing() {
           <h2 className="h-display text-[36px] sm:text-[44px]">Pricing</h2>
           <p className="mt-2 text-ink-muted">Start free. Upgrade when your search picks up.</p>
           <div className="mt-8"><PricingGrid plans={plans.data?.plans || []} /></div>
+          <p className="mt-6 text-[14px]"><Link href="/pricing#compare" className="link font-medium">Compare every limit and see what a plan pays back →</Link></p>
         </div>
       </section>
 

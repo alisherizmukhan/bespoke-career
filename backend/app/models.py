@@ -493,3 +493,39 @@ class AICall(Base):
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
     latency_ms: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(TS, default=utcnow, index=True)
+
+
+# ============================================================ CRM & site content
+
+
+class CrmRecord(Base):
+    """Admin-side CRM fields for one customer. The lifecycle stage is computed; `stage` only stores a manual override."""
+    __tablename__ = "crm_records"
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    stage: Mapped[str | None] = mapped_column(String(20))
+    tags: Mapped[list] = mapped_column(JSON, default=list)
+    owner_id: Mapped[uuid.UUID | None] = fk("users.id", nullable=True, ondelete="SET NULL", index=False)
+    follow_up_at: Mapped[datetime | None] = mapped_column(TS)
+    updated_at: Mapped[datetime] = mapped_column(TS, default=utcnow, onupdate=utcnow)
+
+
+class CrmNote(Base):
+    """A note, logged call/email, or task on a customer."""
+    __tablename__ = "crm_notes"
+    id: Mapped[uuid.UUID] = pk()
+    user_id: Mapped[uuid.UUID] = fk("users.id")
+    author_id: Mapped[uuid.UUID | None] = fk("users.id", nullable=True, ondelete="SET NULL", index=False)
+    kind: Mapped[str] = mapped_column(String(10), default="note")  # note | call | email | task
+    body: Mapped[str] = mapped_column(Text)
+    due_at: Mapped[datetime | None] = mapped_column(TS)
+    done: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(TS, default=utcnow, index=True)
+
+
+class SiteContent(Base):
+    """Editable site copy (announcement banner, landing hero, pricing FAQ) keyed by section."""
+    __tablename__ = "site_content"
+    key: Mapped[str] = mapped_column(String(60), primary_key=True)
+    value: Mapped[dict] = mapped_column(JSON, default=dict)
+    updated_by: Mapped[uuid.UUID | None] = fk("users.id", nullable=True, ondelete="SET NULL", index=False)
+    updated_at: Mapped[datetime] = mapped_column(TS, default=utcnow, onupdate=utcnow)
