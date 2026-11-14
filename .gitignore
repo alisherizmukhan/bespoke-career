@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+backend/*.db
+backend/uploads/
+backend/uploads_dev/
+backend/*.log
+.env
+.env.*
+!.env.example
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo
+# OS / editor
+.DS_Store
+.claude/
