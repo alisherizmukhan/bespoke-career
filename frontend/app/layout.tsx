@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+// Fonts are self-hosted (bundled at build time) so builds never depend on Google Fonts being reachable.
+import "@fontsource-variable/inter";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/plus-jakarta-sans/800.css";
 import { Providers } from "@/lib/auth";
 import "./globals.css";
-
-const display = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-display" });
-const sans = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: { default: "Bespoke — Your career, thoughtfully built", template: "%s · Bespoke" },
@@ -15,7 +16,7 @@ export const viewport: Viewport = { themeColor: "#6C47D9", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en">
       <body className="min-h-screen bg-lavender-50 font-sans text-ink">
         <Providers>{children}</Providers>
       </body>
