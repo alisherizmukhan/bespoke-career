@@ -1,5 +1,6 @@
 """Job board over ingested postings + outbound search links to platforms without public APIs."""
 import uuid
+from ..safety import like, safe_url
 from datetime import timedelta
 from urllib.parse import quote_plus
 
@@ -20,7 +21,7 @@ def job_out(j: Job, saved: set | None = None, full: bool = False) -> dict:
     d = {"id": str(j.id), "title": j.title, "company": j.company, "company_logo": j.company_logo, "location": j.location,
          "salary_min": j.salary_min, "salary_max": j.salary_max, "currency": j.currency, "salary_period": j.salary_period,
          "salary_text": j.salary_text, "employment_type": j.employment_type, "work_format": j.work_format,
-         "seniority": j.seniority, "category": j.category, "tags": j.tags or [], "url": j.url,
+         "seniority": j.seniority, "category": j.category, "tags": j.tags or [], "url": safe_url(j.url),
          "source": ATTRIBUTION.get(j.source_kind, j.source_kind), "source_kind": j.source_kind, "source_name": j.source_name,
          "published_at": j.published_at, "fetched_at": j.fetched_at, "saved": bool(saved and j.id in saved)}
     if full:
@@ -64,11 +65,11 @@ def search(
     stmt = select(Job).where(Job.is_active.is_(True), Job.is_duplicate.is_(False))
     if q:
         for term in q.split()[:5]:
-            like = f"%{term}%"
-            stmt = stmt.where(or_(Job.title.ilike(like), Job.company.ilike(like), Job.category.ilike(like)))
+            pat = like(term)
+            stmt = stmt.where(or_(Job.title.ilike(pat, escape="\\"), Job.company.ilike(pat, escape="\\"), Job.category.ilike(pat, escape="\\")))
     if location:
         parts = [p.strip() for p in location.split(",") if p.strip()]
-        stmt = stmt.where(or_(*[Job.location.ilike(f"%{p}%") for p in parts[:1]]))
+        stmt = stmt.where(or_(*[Job.location.ilike(like(p), escape="\\") for p in parts[:1]]))
     if remote:
         stmt = stmt.where(Job.work_format == "remote")
     if category:

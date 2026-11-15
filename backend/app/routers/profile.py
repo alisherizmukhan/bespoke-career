@@ -10,6 +10,9 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models import (ApplicationInterview, AssistantConversation, AssistantMessage, JobApplication, Reminder, Resume,
                       ResumeVersion, SalaryAssessment, User, UserProfile, UserSkill, utcnow)
+from .. import payments
+from ..config import get_settings
+from ..models import AICall, CrmNote, CrmRecord, Notification, SavedJob, Subscription, UsageRecord
 from ..security import get_current_user, verify_password
 from ..services import audit
 from ..storage import delete_file
@@ -201,10 +204,22 @@ def delete_account(body: DeleteIn, user: User = Depends(get_current_user), db: S
     audit(db, uid, "account.deleted", "user", uid)
     db.flush()
     # Child rows cascade through foreign keys; the user row is anonymized so audit history stays intact.
-    for model in (Resume, JobApplication, Reminder, SalaryAssessment, AssistantConversation, UserSkill, UserProfile):
+    # End any paid plan now so the person isn't charged again
+    for s in db.scalars(select(Subscription).where(Subscription.user_id == uid, Subscription.status.in_(["active", "past_due"]))):
+        if s.provider == "stripe" and s.provider_subscription_id and get_settings().stripe_enabled:
+            try:
+                payments.request("DELETE", f"/subscriptions/{s.provider_subscription_id}")
+            except payments.StripeError:
+                pass
+        s.status = "canceled"
+    for model in (Resume, JobApplication, Reminder, SalaryAssessment, AssistantConversation, UserSkill, UserProfile,
+                  SavedJob, Notification, UsageRecord, CrmNote, CrmRecord):
         db.execute(delete(model).where(model.user_id == uid))
+    db.query(AICall).filter(AICall.user_id == uid).update({AICall.user_id: None})
+    # Payments stay (accounting records) but are no longer linked to a readable identity
     user.email = f"deleted-{uid}@deleted.invalid"
     user.password_hash = None
     user.account_status = "deleted"
+    user.tokens_valid_after = utcnow()
     db.commit()
     return {"ok": True}

@@ -2,6 +2,7 @@
 import csv
 import io
 import uuid
+from ..safety import csv_cell, like, safe_link, safe_url
 from collections import Counter
 from datetime import datetime, timedelta
 from typing import Any, Literal
@@ -284,7 +285,7 @@ def admin_jobs(q: str | None = None, source: str | None = None, active: Literal[
                limit: int = Query(50, le=200), offset: int = 0, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     stmt = select(Job)
     if q:
-        stmt = stmt.where(or_(Job.title.ilike(f"%{q}%"), Job.company.ilike(f"%{q}%"), Job.location.ilike(f"%{q}%")))
+        stmt = stmt.where(or_(Job.title.ilike(like(q), escape="\\"), Job.company.ilike(like(q), escape="\\"), Job.location.ilike(like(q), escape="\\")))
     if source:
         stmt = stmt.where(Job.source_kind == source)
     if active != "all":
@@ -294,7 +295,7 @@ def admin_jobs(q: str | None = None, source: str | None = None, active: Literal[
     sources = [s for s, in db.execute(select(Job.source_kind).distinct()).all()]
     return {"total": total, "sources": sorted(sources), "items": [{
         "id": str(j.id), "title": j.title, "company": j.company, "location": j.location, "source": j.source_kind,
-        "source_name": j.source_name, "url": j.url, "salary_min": j.salary_min, "salary_max": j.salary_max,
+        "source_name": j.source_name, "url": safe_url(j.url), "salary_min": j.salary_min, "salary_max": j.salary_max,
         "salary_period": j.salary_period, "category": j.category, "is_active": j.is_active, "is_duplicate": j.is_duplicate,
         "published_at": j.published_at, "fetched_at": j.fetched_at} for j in jobs]}
 
@@ -366,6 +367,17 @@ def put_content(key: str, value: dict[str, Any], request: Request, admin: User =
         raise HTTPException(404, "Unknown content section.")
     allowed = set(CONTENT_DEFAULTS[key])
     clean = {k: v for k, v in value.items() if k in allowed}
+    for k, v in list(clean.items()):
+        if isinstance(v, str):
+            clean[k] = v.strip()[:2000]
+        elif k == "items" and isinstance(v, list):
+            clean[k] = [{"q": str(i.get("q", ""))[:300], "a": str(i.get("a", ""))[:2000]} for i in v[:30] if isinstance(i, dict)]
+        elif k == "active":
+            clean[k] = bool(v)
+        else:
+            clean.pop(k)
+    if "link" in clean:
+        clean["link"] = safe_link(clean["link"])
     row = db.get(SiteContent, key)
     if row:
         row.value, row.updated_by = clean, admin.id
@@ -445,7 +457,7 @@ def _cell(v):
         return v.strftime("%Y-%m-%d %H:%M") if v else ""
     if isinstance(v, uuid.UUID):
         return str(v)
-    return "" if v is None else v
+    return "" if v is None else csv_cell(v)
 
 
 @router.get("/admin/export/{name}")

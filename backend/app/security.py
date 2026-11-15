@@ -81,6 +81,11 @@ def get_current_user(creds: HTTPAuthorizationCredentials | None = Depends(bearer
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Account not found.")
     if user.account_status != "active":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "This account is suspended. Contact support.")
+    tva = user.tokens_valid_after
+    if tva is not None:
+        tva = tva if tva.tzinfo else tva.replace(tzinfo=timezone.utc)
+        if int(payload.get("iat", 0)) < int(tva.timestamp()):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Your session has expired. Sign in again.")
     return user
 
 

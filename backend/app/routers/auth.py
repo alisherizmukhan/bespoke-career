@@ -173,6 +173,7 @@ def forgot(body: EmailIn, request: Request, db: Session = Depends(get_db)):
 def reset(body: ResetIn, request: Request, db: Session = Depends(get_db)):
     u = _consume(db, body.token, "reset")
     u.password_hash = hash_password(body.password)
+    u.tokens_valid_after = utcnow()
     audit(db, u.id, "auth.password_reset", "user", u.id, ip=client_ip(request))
     db.commit()
     return {"ok": True}
@@ -193,6 +194,7 @@ def change_password(body: ChangePw, user: User = Depends(get_current_user), db: 
     if not verify_password(body.current_password, user.password_hash):
         raise HTTPException(400, "Current password is incorrect.")
     user.password_hash = hash_password(body.new_password)
+    user.tokens_valid_after = utcnow()  # sign out every other device
     audit(db, user.id, "auth.password_changed", "user", user.id)
     db.commit()
-    return {"ok": True}
+    return {"ok": True, "access_token": create_access_token(user)}

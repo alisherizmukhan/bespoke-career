@@ -1,5 +1,6 @@
 """Job Tracker: applications, pipeline, interviews, reminders, statistics."""
 import uuid
+from ..safety import like
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -121,10 +122,10 @@ def list_apps(status: str | None = None, q: str | None = None, location: str | N
     if status:
         stmt = stmt.where(JobApplication.status.in_(status.split(",")))
     if q:
-        like = f"%{q}%"
-        stmt = stmt.where((JobApplication.company_name.ilike(like)) | (JobApplication.job_title.ilike(like)))
+        pat = like(q)
+        stmt = stmt.where((JobApplication.company_name.ilike(pat, escape="\\")) | (JobApplication.job_title.ilike(pat, escape="\\")))
     if location:
-        stmt = stmt.where(JobApplication.location.ilike(f"%{location}%"))
+        stmt = stmt.where(JobApplication.location.ilike(like(location), escape="\\"))
     if employment_type:
         stmt = stmt.where(JobApplication.employment_type == employment_type)
     order = {"applied": JobApplication.applied_at.desc().nullslast(), "company": JobApplication.company_name,

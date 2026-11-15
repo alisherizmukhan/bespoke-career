@@ -53,7 +53,7 @@ export function LoginForm() {
       const r = await api("/auth/login", { body: v });
       signIn(r.access_token, r.user);
       const next = sp.get("next");
-      router.push(next && next.startsWith("/") ? next : r.user.role === "admin" ? "/admin" : r.user.onboarding_completed ? "/app" : "/app/onboarding");
+      router.push(next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next :r.user.role === "admin" ? "/admin" : r.user.onboarding_completed ? "/app" : "/app/onboarding");
     } catch (e) {
       setErr(e);
     }

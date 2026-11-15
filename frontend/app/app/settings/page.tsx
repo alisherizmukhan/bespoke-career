@@ -9,7 +9,11 @@ export default function Settings() {
   const prefs = useQuery({ queryKey: ["prefs"], queryFn: () => api("/account/preferences") });
   const [pw, setPw] = useState({ current_password: "", new_password: "" });
   const [delPw, setDelPw] = useState("");
-  const changePw = useMutation({ mutationFn: () => api("/auth/change-password", { body: pw }), onSuccess: () => setPw({ current_password: "", new_password: "" }) });
+  const changePw = useMutation({
+    mutationFn: () => api("/auth/change-password", { body: pw }),
+    // Changing the password signs out every other device; this one keeps working with the fresh token
+    onSuccess: (r: any) => { if (r?.access_token) setToken(r.access_token); setPw({ current_password: "", new_password: "" }); },
+  });
   const setAi = useMutation({ mutationFn: (v: boolean) => api("/account/preferences", { method: "PATCH", body: { ai_consent: v } }), onSuccess: () => prefs.refetch() });
   const exportData = useMutation({
     mutationFn: async () => {

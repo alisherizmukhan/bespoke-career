@@ -55,6 +55,8 @@ class User(Timestamps, Base):
     email_verified_at: Mapped[datetime | None] = mapped_column(TS)
     last_login_at: Mapped[datetime | None] = mapped_column(TS)
     ai_consent: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Sessions issued before this moment are rejected (set on password change/reset and suspension)
+    tokens_valid_after: Mapped[datetime | None] = mapped_column(TS)
 
 
 class EmailToken(Base):

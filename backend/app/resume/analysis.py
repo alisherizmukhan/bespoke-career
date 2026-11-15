@@ -3,7 +3,7 @@ import json
 import re
 from collections import Counter
 
-from ..ai import provider
+from ..ai import guard, provider
 from .knowledge import DOC_BY_SLUG, SECTION_LABELS
 from .schema import AtsAdvice, GeneratedResume, ResumeContent, content_text
 
@@ -145,7 +145,7 @@ def analyze(content: ResumeContent, jd: str | None, document_type: str = "profes
                                                 + ", ".join(hard_missing[:10]) + ".")
         advice = provider.structured(
             "ats_analyze",
-            f"Job description:\n{jd[:12000]}\n\nResume (JSON):\n{content.model_dump_json()[:30000]}\n\n"
+            guard.fence("job_description", jd, 12000) + "\n\n" + guard.fence("resume", content.model_dump_json(), 30000) + "\n\n"
             f"Keyword check already done: matched={matched_req + matched_pref}, missing={missing_req + missing_pref}.",
             AtsAdvice, user_id=user_id)
         if advice:
@@ -229,7 +229,7 @@ def generate(source: ResumeContent, document_type: str, jd: str | None, user_id=
         "resume_generate",
         json.dumps({"document_type": doc["name"], "document_guidance": doc["description"],
                     "section_order": doc["sections"], "max_pages": doc["max_pages"],
-                    "job_description": (jd or "")[:12000], "verified_resume_data": source.model_dump()}),
+                    "job_description": guard.clean(jd or "", 12000), "verified_resume_data": source.model_dump()}),
         GeneratedResume, user_id=user_id)
     if ai is not None:
         v = validate(ai.content, source, document_type)

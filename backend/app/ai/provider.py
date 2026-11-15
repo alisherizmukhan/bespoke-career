@@ -138,14 +138,19 @@ def chat(task: str, system_context: str, messages: list[dict], user_id=None, eff
     started = time.time()
     last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
     model = model_for(task, last_user if isinstance(last_user, str) else "")
+    # The data block goes into the user turn, fenced in tags, never into the system role: it contains user- and
+    # third-party-written text that must not carry instruction authority.
+    if messages and messages[-1]["role"] == "user":
+        fenced = "<career_data>\n" + system_context + "\n</career_data>\n\n<user_message>\n" + str(messages[-1]["content"]) + "\n</user_message>"
+        messages = [*messages[:-1], {"role": "user", "content": fenced}]
     if settings.ai_provider == "openai":
         import openai
 
         try:
             r = _openai().chat.completions.create(
                 model=model,
-                messages=[{"role": "system", "content": prompts.SYSTEM[task]},
-                          {"role": "system", "content": system_context}, *messages],
+                messages=[{"role": "system", "content": prompts.SYSTEM[task]}, *messages],
+                max_completion_tokens=2000,
             )
         except (openai.APIError, openai.APIConnectionError) as e:
             log.warning("AI chat failed: %s", e)
@@ -164,8 +169,7 @@ def chat(task: str, system_context: str, messages: list[dict], user_id=None, eff
     try:
         resp = _anthropic().beta.messages.create(
             model=settings.ai_model, max_tokens=16000, betas=["server-side-fallback-2026-07-01"], fallbacks="default",
-            system=[{"type": "text", "text": prompts.SYSTEM[task], "cache_control": {"type": "ephemeral"}},
-                    {"type": "text", "text": system_context}],
+            system=[{"type": "text", "text": prompts.SYSTEM[task], "cache_control": {"type": "ephemeral"}}],
             output_config={"effort": effort}, messages=messages)
     except (anthropic.APIStatusError, anthropic.APIConnectionError) as e:
         log.warning("AI chat failed: %s", e)

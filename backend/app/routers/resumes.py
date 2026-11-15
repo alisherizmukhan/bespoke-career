@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .. import entitlements
-from ..ai import provider
+from ..ai import guard, provider
 from ..db import get_db
 from ..models import JobApplication, Resume, ResumeAnalysis, ResumeVersion, User, UserProfile, UserSkill
 from ..resume import analysis, parser, render
@@ -199,6 +199,7 @@ class GenerateIn(BaseModel):
 
 @router.post("/resume-intelligence/generate", status_code=201)
 def generate(body: GenerateIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    rate_limit(f"ai-generate:{user.id}", 15, 60)
     r = _own(db, user, body.resume_id)
     if body.document_type not in DOC_BY_SLUG:
         raise HTTPException(422, "Unknown document type.")
@@ -238,6 +239,7 @@ class AnalyzeIn(BaseModel):
 
 @router.post("/resume-intelligence/analyze")
 def analyze(body: AnalyzeIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    rate_limit(f"ai-analyze:{user.id}", 15, 60)
     r = _own(db, user, body.resume_id)
     entitlements.check(db, user, "resume_analysis")
     if body.version_id:
@@ -391,10 +393,12 @@ class CoverOut(BaseModel):
 
 @router.post("/resume-intelligence/cover-letter")
 def cover_letter(body: CoverIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    rate_limit(f"ai-cover:{user.id}", 15, 60)
     r = _own(db, user, body.resume_id)
     entitlements.check(db, user, "resume_generation")
     content = ResumeContent.model_validate((_version(db, r, body.version_id).content if body.version_id else r.parsed_content) or {})
-    ai = provider.structured("cover_letter", f"Company: {body.company or ''}\nJob description:\n{body.job_description}\n\n"
+    ai = provider.structured("cover_letter", "Company: " + guard.clean(body.company or "", 200) + "\n"
+                                             + guard.fence("job_description", body.job_description, 30000) + "\n\n"
                                              f"Verified resume data:\n{content.model_dump_json()}", CoverOut, user_id=user.id)
     if ai:
         letter = ai.letter

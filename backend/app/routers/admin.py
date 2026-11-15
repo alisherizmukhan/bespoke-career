@@ -1,6 +1,7 @@
 """Admin & knowledge management: users, plans, job sources, knowledge records, AI usage, audit log, metrics."""
 import threading
 import uuid
+from ..safety import like
 from datetime import date, timedelta
 from typing import Literal
 
@@ -65,7 +66,7 @@ def metrics(admin: User = Depends(require_admin), db: Session = Depends(get_db))
 def users(q: str | None = None, status: str | None = None, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     stmt = select(User, UserProfile).outerjoin(UserProfile, UserProfile.user_id == User.id).order_by(User.created_at.desc())
     if q:
-        stmt = stmt.where(or_(User.email.ilike(f"%{q}%"), UserProfile.full_name.ilike(f"%{q}%")))
+        stmt = stmt.where(or_(User.email.ilike(like(q), escape="\\"), UserProfile.full_name.ilike(like(q), escape="\\")))
     if status:
         stmt = stmt.where(User.account_status == status)
     subs = {s.user_id: s.plan_slug for s in db.scalars(select(Subscription).where(Subscription.status == "active"))}
@@ -89,6 +90,7 @@ def user_action(uid: uuid.UUID, body: UserAction, request: Request, admin: User 
         raise HTTPException(409, "You can't suspend yourself.")
     if body.action == "suspend":
         u.account_status = "suspended"
+        u.tokens_valid_after = utcnow()
     elif body.action == "restore":
         u.account_status = "active"
     elif body.action == "make_admin":

@@ -2,7 +2,7 @@
 import io
 import re
 
-from ..ai import provider
+from ..ai import guard, provider
 from .schema import Certification, Contact, Education, Experience, Project, ResumeContent, Section
 
 SECTION_ALIASES = {
@@ -156,7 +156,7 @@ def heuristic_parse(text: str) -> ResumeContent:
 
 def parse_resume(text: str, user_id=None) -> tuple[ResumeContent, str]:
     """Returns (content, method)."""
-    ai = provider.structured("resume_parse", f"Resume text:\n\n{text[:60000]}", ResumeContent, user_id=user_id, effort="low")
+    ai = provider.structured("resume_parse", guard.fence("resume", text, 60000), ResumeContent, user_id=user_id, effort="low")
     if ai is not None:
         return ai, "ai"
     return heuristic_parse(text), "heuristic"

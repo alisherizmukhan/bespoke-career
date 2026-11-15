@@ -2,13 +2,14 @@
 with disclosed pay); the LLM only explains them."""
 import re
 import statistics
+from .safety import like
 from datetime import timedelta
 
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
-from .ai import provider
+from .ai import guard, provider
 from .ingest.parse import annualize, US_STATES
 from .models import Job, UserProfile, UserSkill, utcnow
 
@@ -46,10 +47,10 @@ def _location_clause(location: str | None):
         return or_(Job.work_format == "remote", Job.location.ilike("%remote%"))
     parts = [p.strip() for p in loc.split(",") if p.strip()]
     city = parts[0]
-    clauses = [Job.location.ilike(f"%{city}%")]
+    clauses = [Job.location.ilike(like(city), escape="\\")]
     if len(parts) > 1 and parts[1].upper() in US_STATES:
-        clauses.append(Job.location.ilike(f"%, {parts[1].upper()}%"))
-        clauses.append(Job.location.ilike(f"%{US_STATES[parts[1].upper()]}%"))
+        clauses.append(Job.location.ilike("%, " + like(parts[1].upper())[1:], escape="\\"))
+        clauses.append(Job.location.ilike(like(US_STATES[parts[1].upper()]), escape="\\"))
     return or_(*clauses)
 
 
@@ -59,7 +60,7 @@ def _rows(db: Session, title: str, location: str | None, seniority: str | None, 
     stmt = select(Job).where(Job.salary_min.isnot(None), Job.currency == "USD", Job.is_duplicate.is_(False),
                              Job.fetched_at >= utcnow() - timedelta(days=days))
     for t in terms[:4]:
-        stmt = stmt.where(Job.title.ilike(f"%{t}%"))
+        stmt = stmt.where(Job.title.ilike(like(t), escape="\\"))
     lc = _location_clause(location)
     if lc is not None:
         stmt = stmt.where(lc)
@@ -269,7 +270,7 @@ def negotiate(db: Session, user, profile, title: str, location: str | None, base
                           f"${round(target_lo, -3):,.0f}–${round(target_hi, -3):,.0f}. I'm confident I can bring strong "
                           f"results to the team, and I'm flexible on how we structure the overall package."),
               "disclaimer": "Negotiation outcomes are never guaranteed. Base salary and total compensation are shown separately."}
-    ai = provider.structured("negotiate", f"Market and offer (keep numbers): {public(result)}\nCandidate notes: {notes[:2000]}\n"
+    ai = provider.structured("negotiate", f"Market and offer (keep numbers): {public(result)}\nCandidate notes: {guard.fence('user_message', notes, 2000)}\n"
                                           f"Candidate profile: title={getattr(profile, 'current_title', '')}, "
                                           f"years={getattr(profile, 'years_experience', '')}", NegotiationAdvice, user_id=user.id)
     if ai:

@@ -43,7 +43,9 @@ def test_auth_account_lifecycle(client):
     assert client.post(f"{API}/auth/forgot-password", json={"email": "nobody@test.io"}).status_code == 200  # no account enumeration
     assert client.post(f"{API}/auth/reset-password", json={"token": "bad", "password": "N3wPassw0rd!"}).status_code == 400
     assert client.post(f"{API}/auth/change-password", headers=h, json={"current_password": "wrong", "new_password": "N3wPassw0rd!"}).status_code in (400, 401)
-    assert client.post(f"{API}/auth/change-password", headers=h, json={"current_password": "Passw0rd!x", "new_password": "N3wPassw0rd!"}).status_code == 200
+    cp = client.post(f"{API}/auth/change-password", headers=h, json={"current_password": "Passw0rd!x", "new_password": "N3wPassw0rd!"})
+    assert cp.status_code == 200
+    h = {"Authorization": f"Bearer {cp.json()['access_token']}"}  # the old session is revoked by the change
     assert client.post(f"{API}/auth/login", json={"email": "kai@test.io", "password": "N3wPassw0rd!"}).status_code == 200
     assert client.post(f"{API}/auth/logout", headers=h).status_code == 200
 

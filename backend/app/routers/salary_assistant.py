@@ -1,6 +1,7 @@
 """Salary Intelligence endpoints and the AI Career Assistant."""
 import json
 import uuid
+from ..safety import like
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -9,7 +10,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from .. import entitlements, salary
-from ..ai import provider
+from ..ai import guard, provider
 from ..db import get_db
 from ..models import (ApplicationInterview, AssistantConversation, AssistantMessage, Job, JobApplication, Reminder, Resume,
                       ResumeAnalysis, SalaryAssessment, SavedJob, User, UserProfile, UserSkill, utcnow)
@@ -117,9 +118,9 @@ def matching_jobs(db: Session, p: UserProfile | None, limit: int = 6) -> list[Jo
     words = [w for w in title.split() if len(w) > 2][:3]
     stmt = select(Job).where(Job.is_active.is_(True), Job.is_duplicate.is_(False))
     for w in words:
-        stmt = stmt.where(Job.title.ilike(f"%{w}%"))
+        stmt = stmt.where(Job.title.ilike(like(w), escape="\\"))
     if p.city:
-        stmt = stmt.order_by(Job.location.ilike(f"%{p.city}%").desc(), Job.published_at.desc().nullslast())
+        stmt = stmt.order_by(Job.location.ilike(like(p.city), escape="\\").desc(), Job.published_at.desc().nullslast())
     else:
         stmt = stmt.order_by(Job.published_at.desc().nullslast())
     return db.scalars(stmt.limit(limit)).all()
@@ -257,12 +258,15 @@ def ask(body: AskIn, user: User = Depends(get_current_user), db: Session = Depen
     db.add(AssistantMessage(conversation_id=c.id, role="user", content=body.message))
     ctx = build_context(db, user)
     reply = None
-    if user.ai_consent:
-        reply = provider.chat("assistant", "User career data (JSON):\n" + json.dumps(ctx, default=str),
-                              [{"role": m.role, "content": m.content} for m in history] + [{"role": "user", "content": body.message}],
-                              user_id=user.id)
-    method = "ai" if reply else "rules"
-    reply = reply or rule_based_reply(body.message, ctx)
+    if guard.screen_input(body.message):
+        reply, method = guard.OFF_LIMITS_REPLY, "guard"
+    else:
+        if user.ai_consent:
+            reply = provider.chat("assistant", json.dumps(guard.clean(ctx), default=str, ensure_ascii=False),
+                                  [{"role": m.role, "content": m.content} for m in history] + [{"role": "user", "content": body.message}],
+                                  user_id=user.id)
+        method = "ai" if reply else "rules"
+        reply = guard.screen_output(reply) if reply else rule_based_reply(body.message, ctx)
     m = AssistantMessage(conversation_id=c.id, role="assistant", content=reply, meta={"method": method})
     db.add(m)
     c.updated_at = utcnow()

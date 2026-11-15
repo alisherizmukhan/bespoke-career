@@ -16,7 +16,8 @@ settings = get_settings()
 
 app = FastAPI(title="Bespoke API", version="1.0.0",
               description="Bespoke — AI-powered Career Intelligence Platform. Versioned REST API under /api/v1.",
-              docs_url="/api/docs", openapi_url="/api/openapi.json")
+              docs_url=None if settings.env == "production" else "/api/docs",
+              openapi_url=None if settings.env == "production" else "/api/openapi.json", redoc_url=None)
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_list, allow_credentials=False,
                    allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Disposition"])
 
@@ -26,6 +27,12 @@ async def security_headers(request: Request, call_next):
     resp = await call_next(request)
     resp.headers.setdefault("X-Content-Type-Options", "nosniff")
     resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    if not request.url.path.startswith(("/api/docs", "/api/openapi")):
+        resp.headers.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    resp.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    if request.url.path.startswith(("/api/v1/auth", "/api/v1/account", "/api/v1/admin", "/api/v1/billing")):
+        resp.headers.setdefault("Cache-Control", "no-store")
     if settings.env == "production":
         resp.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
     return resp
