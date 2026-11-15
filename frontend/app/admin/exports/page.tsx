@@ -30,7 +30,7 @@ export default function Exports() {
           </div>
         ))}
       </div>
-      <p className="mt-4 text-[13px] text-ink-muted">Exports contain personal data. Store them securely and delete them when you're done.</p>
+      <p className="mt-4 text-small text-ink-muted">Exports contain personal data. Store them securely and delete them when you're done.</p>
     </div>
   );
 }

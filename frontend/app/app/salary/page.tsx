@@ -31,7 +31,7 @@ function MarketView({ m }: { m: any }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><p className="text-[18px] font-medium">{m.title}</p><p className="text-sm text-ink-muted">{m.location}{m.seniority ? ` · ${m.seniority}` : ""} · {m.compensation_type}</p></div>
+        <div><p className="text-lg font-medium">{m.title}</p><p className="text-sm text-ink-muted">{m.location}{m.seniority ? ` · ${m.seniority}` : ""} · {m.compensation_type}</p></div>
         <Badge tone="info">{m.sample_size} postings</Badge>
       </div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
@@ -107,7 +107,7 @@ export default function Salary() {
             ) : assess.data.estimate ? (
               <div className="space-y-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div><p className="text-sm text-ink-muted">{assess.data.title} · {assess.data.location}</p><p className="tabular text-[32px] font-medium leading-none">{money(assess.data.estimate.low, { compact: true })} – {money(assess.data.estimate.high, { compact: true })}</p><p className="text-sm text-ink-muted">Midpoint {money(assess.data.estimate.mid)} per year</p></div>
+                  <div><p className="text-sm text-ink-muted">{assess.data.title} · {assess.data.location}</p><p className="tabular text-h2 font-medium leading-none">{money(assess.data.estimate.low, { compact: true })} – {money(assess.data.estimate.high, { compact: true })}</p><p className="text-sm text-ink-muted">Midpoint {money(assess.data.estimate.mid)} per year</p></div>
                   <Badge tone={assess.data.confidence === "high" ? "success" : assess.data.confidence === "medium" ? "info" : "warning"}>{assess.data.confidence} confidence</Badge>
                 </div>
                 <RangeBar stats={assess.data.market.stats} mark={assess.data.estimate} />

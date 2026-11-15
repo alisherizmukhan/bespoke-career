@@ -35,7 +35,7 @@ export default function AdminMetrics() {
                   <div className="w-1/2 rounded-t bg-violet-600" style={{ height: `${(w.signups / maxW) * 100}%` }} title={`${w.signups} signups`} />
                   <div className="w-1/2 rounded-t bg-violet-300" style={{ height: `${(w.applications / maxW) * 100}%` }} title={`${w.applications} applications`} />
                 </div>
-                <span className="text-[10px] text-ink-muted">{w.period.slice(5)}</span>
+                <span className="text-xs text-ink-muted">{w.period.slice(5)}</span>
               </div>
             ))}
           </div>

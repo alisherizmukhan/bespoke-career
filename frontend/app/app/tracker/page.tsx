@@ -181,13 +181,13 @@ export default function Tracker() {
               return (
                 <div key={col} onDragOver={(e) => e.preventDefault()} onDrop={() => { if (drag) move.mutate({ id: drag, status: col }); setDrag(null); }}
                   className="w-[260px] shrink-0 rounded-lg bg-lavender-100 p-2.5">
-                  <div className="mb-2 flex items-center justify-between px-1"><p className="text-[13px] font-medium">{labels[col] || col}</p><span className="tabular rounded-full bg-white px-2 text-xs text-ink-muted">{items.length}</span></div>
+                  <div className="mb-2 flex items-center justify-between px-1"><p className="text-small font-medium">{labels[col] || col}</p><span className="tabular rounded-full bg-white px-2 text-xs text-ink-muted">{items.length}</span></div>
                   <div className="min-h-[60px] space-y-2">
                     {items.map((a) => (
                       <button key={a.id} draggable onDragStart={() => setDrag(a.id)} onClick={() => setOpen(a.id)} className="card block w-full p-3 text-left hover:border-violet-300">
                         <p className="line-clamp-2 text-sm font-medium">{a.job_title}</p>
                         <p className="text-xs text-ink-muted">{a.company_name}</p>
-                        <div className="mt-2 flex flex-wrap gap-1.5 text-[12px] text-ink-muted">
+                        <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-ink-muted">
                           {a.salary_max && <span>{money(a.salary_max, { compact: true })}</span>}
                           {a.next_interview && <span className="text-warning">Interview {date(a.next_interview)}</span>}
                           {a.applied_at && <span>Applied {date(a.applied_at)}</span>}
@@ -204,7 +204,7 @@ export default function Tracker() {
       ) : view === "table" ? (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
-            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Company", "Title", "Status", "Location", "Salary", "Applied", "Next interview"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
+            <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted"><tr>{["Company", "Title", "Status", "Location", "Salary", "Applied", "Next interview"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
             <tbody>{apps.map((a) => (
               <tr key={a.id} onClick={() => setOpen(a.id)} className="cursor-pointer border-b border-line last:border-0 hover:bg-lavender-50">
                 <td className="px-4 py-3 font-medium">{a.company_name}</td><td className="px-4 py-3">{a.job_title}</td>

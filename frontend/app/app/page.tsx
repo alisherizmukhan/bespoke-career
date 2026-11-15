@@ -22,9 +22,9 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-mono text-[12px] text-ink-faint">{today}</p>
-          <h1 className="h-display mt-1 text-[32px] leading-[1.1] sm:text-[40px]">Dashboard</h1>
-          <p className="mt-1 text-[15px] text-ink-muted">
+          <p className="font-mono text-xs text-ink-faint">{today}</p>
+          <h1 className="h-display mt-1 text-h2 leading-[1.1] sm:text-h1">Dashboard</h1>
+          <p className="mt-1 text-body text-ink-muted">
             {d.profile.target_title ? <>Target role: <span className="text-ink">{d.profile.target_title}</span>{d.profile.title ? <> · now {d.profile.title}</> : null}</> : "Set a target role to get sharper recommendations"}
           </p>
         </div>
@@ -49,7 +49,7 @@ export default function Dashboard() {
               {d.recommendations.map((r: any, i: number) => (
                 <li key={i}><Link href={r.link} className="group flex items-start gap-3 py-3.5">
                   <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-violet-100 text-violet-600"><ArrowRight className="h-4 w-4" /></span>
-                  <span className="flex-1"><span className="block text-[15px] font-medium group-hover:text-violet-700">{r.title}</span><span className="text-sm text-ink-muted">{r.body}</span></span>
+                  <span className="flex-1"><span className="block text-body font-medium group-hover:text-violet-700">{r.title}</span><span className="text-sm text-ink-muted">{r.body}</span></span>
                 </Link></li>
               ))}
             </ul>
@@ -93,7 +93,7 @@ export default function Dashboard() {
               const pct = f.unlimited ? 8 : f.limit ? Math.min(100, (100 * f.used) / f.limit) : 100;
               return (
                 <div key={k}>
-                  <div className="flex justify-between text-[13px]"><span>{f.label}</span><span className="tabular text-ink-muted">{f.used} / {f.unlimited ? "∞" : f.limit}</span></div>
+                  <div className="flex justify-between text-small"><span>{f.label}</span><span className="tabular text-ink-muted">{f.used} / {f.unlimited ? "∞" : f.limit}</span></div>
                   <div className="mt-1 h-1.5 rounded-full bg-violet-100"><div className={`h-1.5 rounded-full ${pct >= 100 ? "bg-warning" : "bg-violet-600"}`} style={{ width: `${pct}%` }} /></div>
                 </div>
               );

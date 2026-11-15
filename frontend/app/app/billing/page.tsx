@@ -96,7 +96,7 @@ export default function Billing() {
       <Card className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex-1">
           <p className="text-sm text-ink-muted">Current plan</p>
-          <p className="text-[22px] font-semibold">{sub.data.plan.name}</p>
+          <p className="text-2xl font-semibold">{sub.data.plan.name}</p>
           {s && curPlan && (
             <p className="text-sm text-ink-muted">
               {s.cancel_at_period_end
@@ -114,25 +114,25 @@ export default function Billing() {
       {/* Cancel: say plainly what changes, offer at most one cheaper option that fits the reason, never hide the cancel button */}
       {leaving && s && curPlan && (
         <Card className="mb-6 border-ink">
-          <p className="text-[17px] font-semibold">Before you cancel</p>
+          <p className="text-lg font-semibold">Before you cancel</p>
           <p className="mt-1 text-sm text-ink-muted">
             You keep {curPlan.name} until <b className="font-medium text-ink">{date(s.current_period_end)}</b>. After that your account moves to Free. Your resumes, applications and notes stay.
           </p>
           {free && (
             <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {LIMIT_ROWS.filter((r) => (curPlan.limits?.[r.key] ?? 0) !== (free.limits?.[r.key] ?? 0)).slice(0, 4).map((r) => (
-                <div key={r.key} className="rounded-md bg-lavender-50 px-3 py-2 text-[13px]">
+                <div key={r.key} className="rounded-md bg-lavender-50 px-3 py-2 text-small">
                   <p className="text-ink-muted">{r.label}</p>
                   <p className="tabular mt-0.5 font-medium">{limitText(curPlan.limits?.[r.key], r.flag)} <ArrowRight className="inline h-3.5 w-3.5 text-ink-faint" /> {limitText(free.limits?.[r.key], r.flag)}</p>
                 </div>
               ))}
             </div>
           )}
-          <p className="mt-5 text-[13px] font-medium">What's the main reason? <span className="font-normal text-ink-faint">Optional</span></p>
+          <p className="mt-5 text-small font-medium">What's the main reason? <span className="font-normal text-ink-faint">Optional</span></p>
           <div className="mt-2 flex flex-wrap gap-2">
             {REASONS.map((r) => (
               <button key={r} type="button" onClick={() => setReason(r === reason ? null : r)}
-                className={cx("rounded-md border px-3 py-1.5 text-[13px] font-medium", r === reason ? "border-ink bg-ink text-white" : "border-line bg-white text-ink-muted hover:text-ink")}>{r}</button>
+                className={cx("rounded-md border px-3 py-1.5 text-small font-medium", r === reason ? "border-ink bg-ink text-white" : "border-line bg-white text-ink-muted hover:text-ink")}>{r}</button>
             ))}
           </div>
           {reason === "I found a job" && <p className="mt-4 rounded-md bg-success-soft px-3 py-2 text-sm text-success">Congratulations. Everything you built stays on Free for your next move.</p>}
@@ -160,7 +160,7 @@ export default function Billing() {
       {upsell && !leaving && (
         <Card className="mb-6 flex flex-col gap-4 border-accent/40 bg-accent-soft sm:flex-row sm:items-center">
           <div className="flex-1">
-            <p className="text-[15px] font-semibold">Pay yearly and save {money(annualMath(upsell).saved)}</p>
+            <p className="text-body font-semibold">Pay yearly and save {money(annualMath(upsell).saved)}</p>
             <p className="mt-1 text-sm text-ink-muted">{upsell.name} for {usd(annualMath(upsell).perMonth)}/mo instead of {usd(upsell.price_month)}/mo, billed {usd(upsell.price_year)} once a year.</p>
           </div>
           <Button onClick={() => setPending({ plan: upsell.slug, interval: "year" })}>Review yearly</Button>
@@ -173,14 +173,14 @@ export default function Billing() {
           <Card className="mb-6 border-ink">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[13px] text-ink-muted">Order summary</p>
-                <p className="text-[20px] font-semibold">{target.name}, billed {pending.interval}ly</p>
+                <p className="text-small text-ink-muted">Order summary</p>
+                <p className="text-xl font-semibold">{target.name}, billed {pending.interval}ly</p>
               </div>
               {pending.interval === "year" && <Badge tone="success">Save {usd(annualMath(target).saved)} vs monthly</Badge>}
             </div>
             <div className="mt-5 grid gap-6 lg:grid-cols-2">
-              <dl className="space-y-2 text-[14px]">
-                <div className="flex justify-between gap-4"><dt className="text-ink-muted">You pay today</dt><dd className="tabular text-[18px] font-semibold">{usd(pending.interval === "year" ? target.price_year : target.price_month)}</dd></div>
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between gap-4"><dt className="text-ink-muted">You pay today</dt><dd className="tabular text-lg font-semibold">{usd(pending.interval === "year" ? target.price_year : target.price_month)}</dd></div>
                 {pending.interval === "year" && <div className="flex justify-between gap-4"><dt className="text-ink-muted">Works out to</dt><dd className="tabular">{usd(annualMath(target).perMonth)} a month</dd></div>}
                 <div className="flex justify-between gap-4"><dt className="text-ink-muted">Next charge</dt><dd className="tabular">{date(addDays(pending.interval === "year" ? 365 : 30))}, same amount</dd></div>
                 <div className="flex justify-between gap-4"><dt className="text-ink-muted">Cancel</dt><dd>Anytime, access to the end of the period</dd></div>
@@ -189,8 +189,8 @@ export default function Billing() {
                   : <div className="flex justify-between gap-4 border-t border-line pt-2"><dt className="text-ink-muted">Charged in beta</dt><dd className="font-medium text-warning">$0, test mode</dd></div>}
               </dl>
               <div>
-                <p className="text-[13px] font-medium">You get{curPlan && cur !== target.slug ? ` compared with ${curPlan.name}` : ""}</p>
-                <ul className="mt-2 space-y-1.5 text-[13px]">
+                <p className="text-small font-medium">You get{curPlan && cur !== target.slug ? ` compared with ${curPlan.name}` : ""}</p>
+                <ul className="mt-2 space-y-1.5 text-small">
                   {LIMIT_ROWS.map((r) => {
                     const now = curPlan?.limits?.[r.key] ?? 0, next = target.limits?.[r.key] ?? 0;
                     if (!next) return null;
@@ -227,9 +227,9 @@ export default function Billing() {
           const isCur = p.slug === cur && (!s || s.interval === interval);
           return (
             <Card key={p.slug} className={cx("flex flex-col", p.slug === cur && "border-ink")}>
-              <div className="flex items-center justify-between"><p className="text-[16px] font-semibold">{p.name}</p>{p.slug === cur && <Badge tone="info">Current{s ? ` · ${s.interval}ly` : ""}</Badge>}</div>
+              <div className="flex items-center justify-between"><p className="text-base font-semibold">{p.name}</p>{p.slug === cur && <Badge tone="info">Current{s ? ` · ${s.interval}ly` : ""}</Badge>}</div>
               <PlanPrice plan={p} interval={interval} onPickYearly={() => setInterval("year")} />
-              <ul className="mt-5 flex-1 space-y-2 text-[13px] text-ink-muted">{p.features.map((f) => <li key={f} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" />{f}</li>)}</ul>
+              <ul className="mt-5 flex-1 space-y-2 text-small text-ink-muted">{p.features.map((f) => <li key={f} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" />{f}</li>)}</ul>
               {!isCur && p.slug !== "free" && (
                 <Button className="mt-5" variant={p.slug === "pro" ? "primary" : "secondary"} onClick={() => setPending({ plan: p.slug, interval })}>
                   {p.slug === cur ? `Switch to ${interval}ly billing` : `${planList.findIndex((x) => x.slug === p.slug) > planList.findIndex((x) => x.slug === cur) ? "Upgrade" : "Switch"} to ${p.name}`}

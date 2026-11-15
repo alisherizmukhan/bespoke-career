@@ -19,7 +19,7 @@ function PlanCard({ p }: { p: any }) {
   if (!f) return null;
   return (
     <Card className="space-y-4">
-      <p className="text-[15px] font-medium">{p.name}</p>
+      <p className="text-body font-medium">{p.name}</p>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Monthly $" id={`${p.slug}-m`}><Input id={`${p.slug}-m`} type="number" value={f.price_month} onChange={(e) => setF({ ...f, price_month: Number(e.target.value) })} /></Field>
         <Field label="Yearly $" id={`${p.slug}-y`}><Input id={`${p.slug}-y`} type="number" value={f.price_year} onChange={(e) => setF({ ...f, price_year: Number(e.target.value) })} /></Field>

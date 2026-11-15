@@ -23,7 +23,7 @@ export default function Users() {
       {users.isLoading ? <LoadingCards /> : users.isError ? <ErrorState error={users.error} /> : (
         <Card className="!p-0 overflow-x-auto">
           <table className="w-full min-w-[860px] text-sm">
-            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["User", "Type", "Plan", "Status", "Joined", "Last login", "Actions"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
+            <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted"><tr>{["User", "Type", "Plan", "Status", "Joined", "Last login", "Actions"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
             <tbody>{users.data.map((u: any) => (
               <tr key={u.id} className="border-b border-line last:border-0">
                 <td className="px-4 py-3"><p className="font-medium">{u.full_name || "—"}{u.role === "admin" && <Badge tone="info" className="ml-2">Admin</Badge>}</p><p className="text-xs text-ink-muted">{u.email}</p></td>

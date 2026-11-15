@@ -41,7 +41,7 @@ export default function Sources() {
       <InlineError error={run.error} />
       <Card className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[860px] text-sm">
-          <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["Source", "Provider", "Status", "Last run", "Found / new", "Active jobs", ""].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
+          <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted"><tr>{["Source", "Provider", "Status", "Last run", "Found / new", "Active jobs", ""].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
           <tbody>{q.data.sources.map((s: any) => (
             <tr key={s.id} className="border-b border-line last:border-0">
               <td className="px-4 py-3"><p className="font-medium">{s.name}</p><p className="max-w-[260px] truncate text-xs text-ink-muted">{JSON.stringify(s.config)}</p></td>

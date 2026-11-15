@@ -49,7 +49,7 @@ function Notifications() {
     <div className="relative" ref={ref}>
       <button onClick={() => { setOpen(!open); if (!open && unread) read.mutate(); }} className="relative rounded-md p-2 text-ink-muted hover:bg-lavender-100" aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}>
         <Bell className="h-5 w-5" />
-        {unread > 0 && <span className="tabular absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 font-mono text-[10px] text-white">{unread}</span>}
+        {unread > 0 && <span className="tabular absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 font-mono text-xs text-white">{unread}</span>}
       </button>
       {open && (
         <div className="absolute right-0 top-12 z-50 w-[340px] max-w-[calc(100vw-24px)] rounded-lg border border-line bg-white p-2 shadow-pop">
@@ -64,7 +64,7 @@ function Notifications() {
               <Link key={n.id} href={n.link || "#"} onClick={() => setOpen(false)} className="block rounded-md px-3 py-2.5 hover:bg-lavender-50">
                 <p className="text-sm font-medium">{n.title}</p>
                 {n.body && <p className="line-clamp-2 text-xs text-ink-muted">{n.body}</p>}
-                <p className="mt-0.5 text-[12px] text-ink-muted">{ago(n.created_at)}</p>
+                <p className="mt-0.5 text-xs text-ink-muted">{ago(n.created_at)}</p>
               </Link>
             )) : !q.data?.due_reminders?.length && <p className="px-3 py-6 text-center text-sm text-ink-muted">You're all caught up.</p>}
           </div>
@@ -80,7 +80,7 @@ function SideNav({ nav, dark, onNavigate }: { nav: typeof APP_NAV; dark?: boolea
     <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4" aria-label="App">
       {nav.map((g) => (
         <div key={g.group}>
-          <p className={cx("mb-2 px-3 text-[12px]", dark ? "text-night-mute" : "text-ink-faint")}>{g.group}</p>
+          <p className={cx("mb-2 px-3 text-xs", dark ? "text-night-mute" : "text-ink-faint")}>{g.group}</p>
           {g.items.map((it) => {
             const active = it.href === "/app" || it.href === "/admin" ? path === it.href : path.startsWith(it.href);
             return (
@@ -139,14 +139,14 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
           <form className="relative hidden max-w-md flex-1 sm:block" onSubmit={(e) => { e.preventDefault(); router.push(admin ? `/admin/crm?q=${encodeURIComponent(q)}` : `/app/jobs?q=${encodeURIComponent(q)}`); }}>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={admin ? "Search customers" : "Search jobs"} aria-label={admin ? "Search customers" : "Search jobs"}
-              className="h-9 w-full rounded-md border border-line bg-white pl-9 pr-3 text-sm placeholder:text-ink-faint focus:border-violet-400 focus:outline-none" />
+              className="h-9 w-full rounded-md border border-line bg-white pl-9 pr-3 text-sm placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25" />
           </form>
           <div className="ml-auto flex items-center gap-1">
-            {!admin && <Link href="/app/assistant" className="hidden h-8 items-center gap-1.5 rounded-md border border-line bg-white px-3 text-[13px] text-ink transition-colors duration-150 hover:bg-lavender-100 sm:inline-flex"><MessageSquare className="h-4 w-4 text-ink-faint" />Ask the assistant</Link>}
+            {!admin && <Link href="/app/assistant" className="hidden h-8 items-center gap-1.5 rounded-md border border-line bg-white px-3 text-small text-ink transition-colors duration-150 hover:bg-lavender-100 sm:inline-flex"><MessageSquare className="h-4 w-4 text-ink-faint" />Ask the assistant</Link>}
             <Notifications />
             <div className="relative">
               <button onClick={() => setMenu(!menu)} className="flex items-center gap-2 rounded-md p-1.5 hover:bg-lavender-100" aria-label="Account menu">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[13px] font-medium text-lavender-50">{(user.full_name || user.email).slice(0, 1).toUpperCase()}</span>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-small font-medium text-lavender-50">{(user.full_name || user.email).slice(0, 1).toUpperCase()}</span>
               </button>
               {menu && (
                 <div className="absolute right-0 top-12 z-50 w-56 rounded-lg border border-line bg-white p-1.5 shadow-pop" onMouseLeave={() => setMenu(false)}>
@@ -160,7 +160,7 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
           </div>
         </header>
         {!admin && !user.email_verified && (
-          <div className="flex flex-wrap items-center gap-2 border-b border-warning-soft bg-warning-soft px-4 py-2 text-[13px] text-warning sm:px-6">
+          <div className="flex flex-wrap items-center gap-2 border-b border-warning-soft bg-warning-soft px-4 py-2 text-small text-warning sm:px-6">
             Confirm your email to secure your account. <Link href="/verify-email" className="font-medium underline">Confirm now</Link>
           </div>
         )}

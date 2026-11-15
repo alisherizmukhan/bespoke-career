@@ -31,14 +31,14 @@ export default function Tasks() {
             return (
               <div key={n.id} className="flex items-start gap-3 px-5 py-4">
                 <button type="button" aria-label={n.done ? "Mark open" : "Mark done"} onClick={() => toggle.mutate(n)}
-                  className={cx("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border", n.done ? "border-ink bg-ink text-white" : "border-violet-400")}>{n.done && <Check className="h-3.5 w-3.5" />}</button>
+                  className={cx("mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border", n.done ? "border-ink bg-ink text-white" : "border-field")}>{n.done && <Check className="h-4 w-4" />}</button>
                 <div className="min-w-0 flex-1">
                   <p className={cx("text-sm", n.done && "text-ink-muted line-through")}>{n.body}</p>
                   <p className="mt-1 text-xs text-ink-muted">
                     <Link href={`/admin/crm/${n.user_id}`} className="font-medium text-ink hover:underline">{n.customer_email}</Link> · by {n.author}
                   </p>
                 </div>
-                <span className={cx("shrink-0 text-[13px]", overdue ? "font-medium text-danger" : "text-ink-muted")}>{n.due_at ? `${overdue ? "Overdue · " : ""}${date(n.due_at)}` : "No due date"}</span>
+                <span className={cx("shrink-0 text-small", overdue ? "font-medium text-danger" : "text-ink-muted")}>{n.due_at ? `${overdue ? "Overdue · " : ""}${date(n.due_at)}` : "No due date"}</span>
               </div>
             );
           })}

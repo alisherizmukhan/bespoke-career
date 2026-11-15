@@ -16,7 +16,7 @@ export default function Audit() {
       {q.isLoading ? <LoadingCards /> : q.isError ? <ErrorState error={q.error} /> : (
         <Card className="!p-0 overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
-            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted"><tr>{["When", "Actor", "Action", "Entity", "Details", "IP"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
+            <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted"><tr>{["When", "Actor", "Action", "Entity", "Details", "IP"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr></thead>
             <tbody>{q.data.map((l: any) => (
               <tr key={l.id} className="border-b border-line align-top last:border-0">
                 <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{date(l.created_at, true)}</td><td className="px-4 py-2.5">{l.actor}</td>

@@ -15,11 +15,11 @@ export function ChipsInput({ value, onChange, placeholder, suggestions = [] }: {
   };
   return (
     <div>
-      <div className="flex min-h-[46px] flex-wrap items-center gap-1.5 rounded-md border border-violet-200 bg-white px-2 py-1.5 focus-within:border-violet-600 focus-within:ring-2 focus-within:ring-violet-100">
+      <div className="flex min-h-[46px] flex-wrap items-center gap-1.5 rounded-md border border-field bg-white px-2 py-1.5 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/25">
         {value.map((v) => (
-          <span key={v} className="inline-flex items-center gap-1 rounded-full bg-violet-100 py-1 pl-2.5 pr-1 text-[13px] font-medium text-violet-700">
+          <span key={v} className="inline-flex items-center gap-1 rounded-full bg-violet-100 py-1 pl-2.5 pr-1 text-small font-medium text-violet-700">
             {v}
-            <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} className="rounded-full p-0.5 hover:bg-violet-200" aria-label={`Remove ${v}`}><X className="h-3 w-3" /></button>
+            <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} className="grid h-6 w-6 place-items-center rounded-full hover:bg-violet-200" aria-label={`Remove ${v}`}><X className="h-3.5 w-3.5" /></button>
           </span>
         ))}
         <input value={text} onChange={(e) => setText(e.target.value)} placeholder={value.length ? "" : placeholder}

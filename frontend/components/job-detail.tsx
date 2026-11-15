@@ -37,7 +37,7 @@ export function JobDetail({ id, base }: { id: string; base: string }) {
           <div className="flex gap-4">
             <CompanyAvatar name={j.company} logo={j.company_logo} size={56} />
             <div className="min-w-0">
-              <h1 className="text-[22px] font-medium leading-tight">{j.title}</h1>
+              <h1 className="text-2xl font-medium leading-tight">{j.title}</h1>
               <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-muted">
                 {j.company && <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" />{j.company}</span>}
                 {j.location && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" />{j.location}</span>}
@@ -55,7 +55,7 @@ export function JobDetail({ id, base }: { id: string; base: string }) {
         </div>
         <div className="card p-6">
           <h2 className="mb-3 font-medium">About the role</h2>
-          {j.description ? <div className="whitespace-pre-line text-[15px] leading-7 text-ink/90">{j.description}</div>
+          {j.description ? <div className="whitespace-pre-line text-body leading-7 text-ink/90">{j.description}</div>
             : <p className="text-sm text-ink-muted">The full description is on the original posting.</p>}
           {j.contacts?.length > 0 && <p className="mt-4 text-sm text-ink-muted">Contacts: {j.contacts.join(", ")}</p>}
         </div>

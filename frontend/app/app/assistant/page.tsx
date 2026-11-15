@@ -54,7 +54,7 @@ function Assistant() {
         <div className="flex-1 overflow-y-auto p-2">
           {(convs.data || []).map((c: any) => (
             <div key={c.id} className={cx("group flex items-center rounded-md", cid === c.id ? "bg-violet-100" : "hover:bg-lavender-50")}>
-              <button onClick={() => open(c.id)} className="min-w-0 flex-1 px-3 py-2 text-left"><p className="truncate text-sm font-medium">{c.title}</p><p className="text-[12px] text-ink-muted">{ago(c.updated_at)}</p></button>
+              <button onClick={() => open(c.id)} className="min-w-0 flex-1 px-3 py-2 text-left"><p className="truncate text-sm font-medium">{c.title}</p><p className="text-xs text-ink-muted">{ago(c.updated_at)}</p></button>
               <button onClick={() => del.mutate(c.id)} className="mr-1 hidden rounded p-1 text-ink-muted hover:text-danger group-hover:block" aria-label="Delete conversation"><Trash2 className="h-3.5 w-3.5" /></button>
             </div>
           ))}
@@ -75,7 +75,7 @@ function Assistant() {
             <div className="mx-auto max-w-3xl space-y-4">
               {msgs.map((m, i) => (
                 <div key={i} className={cx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-                  <div className={cx("max-w-[85%] rounded-lg px-4 py-3 text-[15px] leading-6", m.role === "user" ? "rounded-br-sm bg-violet-600 text-white" : "rounded-bl-sm bg-lavender-50 text-ink")}>
+                  <div className={cx("max-w-[85%] rounded-lg px-4 py-3 text-body leading-6", m.role === "user" ? "rounded-br-sm bg-violet-600 text-white" : "rounded-bl-sm bg-lavender-50 text-ink")}>
                     {m.role === "user" ? m.content : <Render text={m.content} />}
                   </div>
                 </div>
@@ -91,10 +91,10 @@ function Assistant() {
             <form onSubmit={(e) => { e.preventDefault(); submit(text); }} className="mt-2 flex items-end gap-2">
               <textarea value={text} onChange={(e) => setText(e.target.value)} rows={1} placeholder="Ask about your applications, resume, salary or next steps…" aria-label="Message"
                 onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(text); } }}
-                className="max-h-40 min-h-[48px] flex-1 resize-none rounded-md border border-violet-200 px-4 py-3 text-sm focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-100" />
+                className="max-h-40 min-h-[48px] flex-1 resize-none rounded-md border border-field px-4 py-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25" />
               <Button type="submit" size="lg" loading={send.isPending} aria-label="Send"><Send className="h-4 w-4" /></Button>
             </form>
-            <p className="mt-2 text-center text-[12px] text-ink-muted">AI answers can be wrong. Check important details before you act on them.</p>
+            <p className="mt-2 text-center text-xs text-ink-muted">AI answers can be wrong. Check important details before you act on them.</p>
           </div>
         </div>
       </section>

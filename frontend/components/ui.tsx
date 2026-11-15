@@ -24,7 +24,7 @@ const btnVariant = {
   ghost: "text-ink-muted hover:text-ink hover:bg-lavender-100",
   danger: "bg-white text-danger border border-danger-soft hover:bg-danger-soft",
 };
-const btnSize = { sm: "h-8 px-3 text-[13px]", md: "h-10 px-4 text-sm", lg: "h-12 px-5 text-[15px]" };
+const btnSize = { sm: "h-8 px-3 text-small", md: "h-10 px-4 text-sm", lg: "h-12 px-5 text-body" };
 
 export function Button({ variant = "primary", size = "md", loading, href, className, children, ...rest }: BtnProps) {
   const cls = cx(btnBase, btnVariant[variant], btnSize[size], className);
@@ -63,7 +63,7 @@ export const STATUS_TONE: Record<string, keyof typeof tones> = {
 };
 
 export function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
-  return <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink">{children}</label>;
+  return <label htmlFor={htmlFor} className="text-small font-medium text-ink">{children}</label>;
 }
 
 export function Field({ label, error, hint, children, id }: { label?: string; error?: string; hint?: string; children: React.ReactNode; id?: string }) {
@@ -77,7 +77,8 @@ export function Field({ label, error, hint, children, id }: { label?: string; er
   );
 }
 
-const inputCls = "w-full min-h-[46px] rounded-md border border-violet-200 bg-white px-3.5 text-sm text-ink placeholder:text-ink-muted/70 focus:border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-100";
+// Field border meets WCAG 1.4.11 (3:1 against white); focus swaps it for the accent plus a ring
+const inputCls = "w-full min-h-[46px] rounded-md border border-field bg-white px-3.5 text-sm text-ink placeholder:text-ink-faint hover:border-ink-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25";
 export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(
   ({ className, invalid, ...p }, ref) => <input ref={ref} className={cx(inputCls, invalid && "border-danger", className)} {...p} />
 );
@@ -139,7 +140,7 @@ export function UpgradeNotice({ error }: { error: unknown }) {
       <ArrowUpRight className="h-5 w-5 shrink-0 text-accent-ink" />
       <div className="flex-1">
         <p className="text-sm font-medium text-ink">{(error as ApiError).message}</p>
-        {perMonth !== null && <p className="mt-0.5 text-[13px] text-ink-muted">Career Pro lifts this limit from ${Number.isInteger(perMonth) ? perMonth : perMonth.toFixed(2)}/mo billed yearly. Cancel anytime.</p>}
+        {perMonth !== null && <p className="mt-0.5 text-small text-ink-muted">Career Pro lifts this limit from ${Number.isInteger(perMonth) ? perMonth : perMonth.toFixed(2)}/mo billed yearly. Cancel anytime.</p>}
       </div>
       <Button size="sm" href="/app/billing?plan=pro&interval=year">Upgrade to Pro</Button>
     </div>
@@ -187,7 +188,7 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
     <div className="inline-flex flex-wrap gap-1 rounded-md border border-line bg-white p-1" role="tablist">
       {items.map((it) => (
         <button key={it.value} role="tab" aria-selected={value === it.value} onClick={() => onChange(it.value)}
-          className={cx("inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-[13px] font-medium transition-colors duration-150",
+          className={cx("inline-flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-small font-medium transition-colors duration-150",
             value === it.value ? "bg-lavender-100 text-ink shadow-[inset_0_0_0_1px_rgba(28,26,23,0.08)]" : "text-ink-muted hover:text-ink")}>
           {it.icon && <it.icon className="h-4 w-4" />}{it.label}
         </button>
@@ -204,9 +205,9 @@ export function IconTile({ icon: Icon }: { icon: any; tone?: string }) {
 export function StatCard({ label, value, sub }: { icon?: any; label: string; value: React.ReactNode; sub?: React.ReactNode; tone?: any }) {
   return (
     <div className="card p-5">
-      <p className="text-[13px] text-ink-muted">{label}</p>
-      <p className="tabular mt-2 text-[28px] font-medium leading-none tracking-[-0.01em] text-ink">{value}</p>
-      {sub && <p className="mt-2 text-[13px] text-ink-faint">{sub}</p>}
+      <p className="text-small text-ink-muted">{label}</p>
+      <p className="tabular mt-2 text-h3 font-medium leading-none tracking-[-0.01em] text-ink">{value}</p>
+      {sub && <p className="mt-2 text-small text-ink-faint">{sub}</p>}
     </div>
   );
 }
@@ -215,8 +216,8 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="h-display text-[32px] leading-[1.1] sm:text-[40px]">{title}</h1>
-        {subtitle && <p className="mt-1 text-[15px] text-ink-muted">{subtitle}</p>}
+        <h1 className="h-display text-h2 leading-[1.1] sm:text-h1">{title}</h1>
+        {subtitle && <p className="mt-1 text-body text-ink-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -226,16 +227,16 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 export function ScoreRing({ score, size = 96, label }: { score: number; size?: number; label?: string }) {
   const r = (size - 10) / 2;
   const c = 2 * Math.PI * r;
-  const tone = score >= 75 ? "#1f6b43" : score >= 55 ? "#6c47d9" : "#8a5300";
+  const tone = score >= 75 ? "stroke-success" : score >= 55 ? "stroke-accent" : "stroke-warning";
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }} role="img" aria-label={`${label || "Score"} ${score} out of 100`}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#e7e4dd" strokeWidth="6" fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke={tone} strokeWidth="6" fill="none" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} />
+        <circle cx={size / 2} cy={size / 2} r={r} className="stroke-line" strokeWidth="6" fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} className={tone} strokeWidth="6" fill="none" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} />
       </svg>
       <span className="absolute text-center">
         <span className="tabular block text-2xl font-medium text-ink">{score}</span>
-        {label && <span className="block text-[12px] font-medium text-ink-muted">{label}</span>}
+        {label && <span className="block text-xs font-medium text-ink-muted">{label}</span>}
       </span>
     </div>
   );
@@ -246,10 +247,10 @@ export function Logo({ className, light }: { className?: string; light?: boolean
   return (
     <Link href="/" className={cx("inline-flex items-center gap-2", className)} aria-label="Bespoke home">
       <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <rect x="1" y="1" width="20" height="20" rx="5" fill={light ? "#eef0f5" : "#1c1a17"} />
-        <path d="M7 6.5h5.2a2.6 2.6 0 0 1 0 5.2H7m0 0h5.8a2.9 2.9 0 0 1 0 5.8H7V6.5" fill="none" stroke={light ? "#0b0d14" : "#f7f6f3"} strokeWidth="1.8" strokeLinejoin="round" />
+        <rect x="1" y="1" width="20" height="20" rx="5" className={light ? "fill-night-text" : "fill-ink"} />
+        <path d="M7 6.5h5.2a2.6 2.6 0 0 1 0 5.2H7m0 0h5.8a2.9 2.9 0 0 1 0 5.8H7V6.5" fill="none" className={light ? "stroke-night-900" : "stroke-lavender-50"} strokeWidth="1.8" strokeLinejoin="round" />
       </svg>
-      <span className={cx("text-[17px] font-medium tracking-[-0.01em]", light ? "text-night-text" : "text-ink")}>bespoke</span>
+      <span className={cx("text-lg font-medium tracking-[-0.01em]", light ? "text-night-text" : "text-ink")}>bespoke</span>
     </Link>
   );
 }
@@ -258,7 +259,7 @@ export function Logo({ className, light }: { className?: string; light?: boolean
 export function RangeMarker({ left, label = "You", dark }: { left: string; label?: string; dark?: boolean }) {
   return (
     <span className="absolute -top-6 flex -translate-x-1/2 flex-col items-center" style={{ left }} aria-label={`${label} marker`}>
-      <span className={cx("font-mono text-[12px] leading-4", dark ? "text-night-text" : "text-ink")}>{label}</span>
+      <span className={cx("font-mono text-xs leading-4", dark ? "text-night-text" : "text-ink")}>{label}</span>
       <span className={cx("mt-0.5 h-5 w-px", dark ? "bg-night-text" : "bg-ink")} />
     </span>
   );

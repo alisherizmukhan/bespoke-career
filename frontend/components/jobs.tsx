@@ -34,8 +34,8 @@ export function JobCard({ job, base = "/jobs", onSave }: { job: Job; base?: stri
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <Link href={`${base}/${job.id}`} className="line-clamp-2 text-[15px] font-medium text-ink hover:text-violet-700">{job.title}</Link>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-muted">
+            <Link href={`${base}/${job.id}`} className="line-clamp-2 text-body font-medium text-ink hover:text-violet-700">{job.title}</Link>
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-ink-muted">
               {job.company && <span className="inline-flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{job.company}</span>}
               {job.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{job.location}</span>}
             </p>
@@ -46,7 +46,7 @@ export function JobCard({ job, base = "/jobs", onSave }: { job: Job; base?: stri
             </button>
           )}
         </div>
-        {job.snippet && <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-ink-muted">{job.snippet}</p>}
+        {job.snippet && <p className="mt-2 line-clamp-2 text-small leading-5 text-ink-muted">{job.snippet}</p>}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {sal && <Badge tone="success" dot={false}><Wallet className="h-3 w-3" />{sal}</Badge>}
           {job.work_format && <Badge tone="info" dot={false}>{titleCase(job.work_format)}</Badge>}
@@ -120,22 +120,22 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <button onClick={() => setShowFilters(!showFilters)} className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3 py-1.5 text-[13px] font-medium text-violet-700 lg:hidden">
+        <button onClick={() => setShowFilters(!showFilters)} className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-3 py-1.5 text-small font-medium text-violet-700 lg:hidden">
           <SlidersHorizontal className="h-4 w-4" /> Filters
         </button>
         {[["remote", "Remote"], ["with_salary", "Shows salary"]].map(([k, l]) => (
           <button key={k} onClick={() => set(k, params.get(k) ? null : "true")}
-            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-medium", params.get(k) ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
+            className={cx("rounded-full border px-3 py-1.5 text-small font-medium", params.get(k) ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
             {l}
           </button>
         ))}
         {[["posted_days", "1", "Last 24 hours"], ["posted_days", "7", "Past week"]].map(([k, v, l]) => (
           <button key={l} onClick={() => set(k, params.get(k) === v ? null : v)}
-            className={cx("rounded-full border px-3 py-1.5 text-[13px] font-medium", params.get(k) === v ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
+            className={cx("rounded-full border px-3 py-1.5 text-small font-medium", params.get(k) === v ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700 hover:border-violet-400")}>
             {l}
           </button>
         ))}
-        <Select value={params.get("sort") || "recent"} onChange={(e) => set("sort", e.target.value === "recent" ? null : e.target.value)} className="ml-auto !min-h-[36px] !w-auto py-1 text-[13px]" aria-label="Sort">
+        <Select value={params.get("sort") || "recent"} onChange={(e) => set("sort", e.target.value === "recent" ? null : e.target.value)} className="ml-auto !min-h-[36px] !w-auto py-1 text-small" aria-label="Sort">
           <option value="recent">Most recent</option>
           <option value="salary">Highest salary</option>
         </Select>
@@ -144,36 +144,36 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
       <div className="mt-5 grid gap-6 lg:grid-cols-[250px_1fr]">
         <aside className={cx("space-y-5", showFilters ? "block" : "hidden lg:block")}>
           <div className="card p-4">
-            <p className="mb-2 text-[13px] font-medium">Category</p>
+            <p className="mb-2 text-small font-medium">Category</p>
             <div className="max-h-[300px] space-y-0.5 overflow-y-auto pr-1">
               {(facets.data?.categories || []).map((c: any) => (
                 <button key={c.name} onClick={() => set("category", params.get("category") === c.name ? null : c.name)}
-                  className={cx("flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-[13px]", params.get("category") === c.name ? "bg-violet-100 font-medium text-violet-700" : "text-ink-muted hover:bg-lavender-100")}>
+                  className={cx("flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-small", params.get("category") === c.name ? "bg-violet-100 font-medium text-violet-700" : "text-ink-muted hover:bg-lavender-100")}>
                   <span className="truncate">{c.name}</span><span className="tabular text-xs">{c.count}</span>
                 </button>
               ))}
             </div>
           </div>
           <div className="card space-y-3 p-4">
-            <label className="block text-[13px] font-medium">Experience level
+            <label className="block text-small font-medium">Experience level
               <Select value={params.get("seniority") || ""} onChange={(e) => set("seniority", e.target.value || null)} className="mt-1.5">
                 <option value="">Any level</option>
                 {SENIORITY.map((s) => <option key={s} value={s}>{titleCase(s)}</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-medium">Job type
+            <label className="block text-small font-medium">Job type
               <Select value={params.get("employment_type") || ""} onChange={(e) => set("employment_type", e.target.value || null)} className="mt-1.5">
                 <option value="">Any type</option>
                 {TYPES.map((s) => <option key={s} value={s}>{titleCase(s)}</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-medium">Minimum salary
+            <label className="block text-small font-medium">Minimum salary
               <Select value={params.get("min_salary") || ""} onChange={(e) => set("min_salary", e.target.value || null)} className="mt-1.5">
                 <option value="">Any</option>
                 {[50000, 75000, 100000, 150000, 200000].map((v) => <option key={v} value={v}>${v / 1000}k+ / year</option>)}
               </Select>
             </label>
-            <label className="block text-[13px] font-medium">Source
+            <label className="block text-small font-medium">Source
               <Select value={params.get("source") || ""} onChange={(e) => set("source", e.target.value || null)} className="mt-1.5">
                 <option value="">All sources</option>
                 {(facets.data?.sources || []).map((s: any) => <option key={s.kind} value={s.kind}>{s.name} ({s.count})</option>)}
@@ -182,7 +182,7 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
           </div>
           {res.data?.external_search && (
             <div className="card p-4">
-              <p className="text-[13px] font-medium">Search on other boards</p>
+              <p className="text-small font-medium">Search on other boards</p>
               <p className="mb-2 mt-0.5 text-xs text-ink-muted">These sites don't offer public listings to aggregate, so we open the same search there.</p>
               <div className="flex flex-wrap gap-1.5">
                 {res.data.external_search.map((l) => (
@@ -196,7 +196,7 @@ export function JobBoard({ base = "/jobs" }: { base?: string }) {
         </aside>
 
         <section aria-live="polite">
-          <p className="mb-3 text-[13px] text-ink-muted">
+          <p className="mb-3 text-small text-ink-muted">
             {res.data ? <><span className="tabular font-medium text-ink">{res.data.total.toLocaleString("en-US")}</span> jobs{params.get("q") ? ` for “${params.get("q")}”` : ""}</> : "Loading jobs…"}
           </p>
           {res.isLoading ? <LoadingCards n={5} /> : res.isError ? <ErrorState error={res.error} retry={() => res.refetch()} /> :

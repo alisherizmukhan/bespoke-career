@@ -106,7 +106,7 @@ function ResumeDetail({ id }: { id: string }) {
       <Link href="/app/resumes" className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-violet-700"><ArrowLeft className="h-4 w-4" />Resumes</Link>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="h-display text-[28px] leading-tight">{r.title}</h1>
+          <h1 className="h-display text-h3 leading-tight">{r.title}</h1>
           <p className="mt-1 text-sm text-ink-muted">{r.document_type_name} · {versions.length} version{versions.length === 1 ? "" : "s"}{r.original_filename ? <> · <a className="link" href={r.original_url} target="_blank" rel="noopener noreferrer">original file</a></> : null}</p>
         </div>
         <div className="flex flex-wrap gap-2">

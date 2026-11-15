@@ -37,13 +37,13 @@ export default function Jobs() {
         <Select value={active} onChange={(e) => { setActive(e.target.value); setPage(0); }} className="max-w-[150px]" aria-label="Visibility">
           <option value="all">All</option><option value="active">Visible</option><option value="hidden">Hidden</option>
         </Select>
-        <span className="ml-auto text-[13px] text-ink-muted">{total.toLocaleString("en-US")} jobs</span>
+        <span className="ml-auto text-small text-ink-muted">{total.toLocaleString("en-US")} jobs</span>
       </div>
       <InlineError error={save.error} />
       {jobs.isLoading ? <LoadingCards /> : jobs.isError ? <ErrorState error={jobs.error} /> : (
         <div className="overflow-x-auto rounded-lg border border-line bg-white">
           <table className="w-full min-w-[980px] text-sm">
-            <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted">
+            <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted">
               <tr>{["Job", "Location", "Pay", "Source", "Fetched", "Status", ""].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr>
             </thead>
             <tbody>{jobs.data.items.map((j: any) => (
@@ -77,11 +77,11 @@ export default function Jobs() {
         <Modal open onClose={() => setEdit(null)} title="Edit job">
           <div className="space-y-3">
             {[["title", "Title"], ["company", "Company"], ["location", "Location"], ["category", "Category"]].map(([k, l]) => (
-              <label key={k} className="block text-[13px] text-ink-muted">{l}<Input value={edit[k] || ""} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} className="mt-1" /></label>
+              <label key={k} className="block text-small text-ink-muted">{l}<Input value={edit[k] || ""} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} className="mt-1" /></label>
             ))}
             <div className="grid grid-cols-2 gap-3">
               {[["salary_min", "Pay from"], ["salary_max", "Pay to"]].map(([k, l]) => (
-                <label key={k} className="block text-[13px] text-ink-muted">{l}<Input type="number" value={edit[k] ?? ""} onChange={(e) => setEdit({ ...edit, [k]: e.target.value === "" ? null : +e.target.value })} className="mt-1" /></label>
+                <label key={k} className="block text-small text-ink-muted">{l}<Input type="number" value={edit[k] ?? ""} onChange={(e) => setEdit({ ...edit, [k]: e.target.value === "" ? null : +e.target.value })} className="mt-1" /></label>
               ))}
             </div>
             <div className="flex justify-end gap-2 pt-2">

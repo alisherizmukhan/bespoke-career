@@ -16,7 +16,7 @@ function Section({ id, title, hint, updated, children, onSave, onReset, saving, 
     <Card id={id}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[17px] font-semibold">{title}</p>
+          <p className="text-lg font-semibold">{title}</p>
           <p className="mt-0.5 text-sm text-ink-muted">{hint}</p>
         </div>
         <p className="text-xs text-ink-faint">{updated ? `Edited ${date(updated)}` : "Using default copy"}</p>
@@ -32,7 +32,7 @@ function Section({ id, title, hint, updated, children, onSave, onReset, saving, 
 }
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <label className="block text-[13px] font-medium text-ink-muted">{label}<div className="mt-1">{children}</div></label>
+  <label className="block text-small font-medium text-ink-muted">{label}<div className="mt-1">{children}</div></label>
 );
 
 export default function ContentAdmin() {
@@ -73,7 +73,7 @@ export default function ContentAdmin() {
             <Field label="Link label"><Input value={c.announcement.link_label} onChange={(e) => set("announcement", "link_label", e.target.value)} placeholder="See plans" /></Field>
           </div>
           {c.announcement.active && c.announcement.text && (
-            <div className="rounded-md bg-ink px-4 py-2 text-center text-[13px] text-white">{c.announcement.text}{c.announcement.link && <span className="ml-2 underline">{c.announcement.link_label || "Learn more"}</span>}</div>
+            <div className="rounded-md bg-ink px-4 py-2 text-center text-small text-white">{c.announcement.text}{c.announcement.link && <span className="ml-2 underline">{c.announcement.link_label || "Learn more"}</span>}</div>
           )}
         </Section>
 

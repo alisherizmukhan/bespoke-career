@@ -23,7 +23,7 @@ export function PublicHeader({ dark }: { dark?: boolean }) {
   return (
     <header className={cx("z-40", dark ? "absolute inset-x-0 top-0" : "sticky top-0 border-b border-line bg-lavender-50")}>
       {a?.active && a.text && (
-        <div className={cx("px-4 py-2 text-center text-[13px]", dark ? "border-b border-night-line bg-night-800 text-night-text" : "bg-ink text-white")}>
+        <div className={cx("px-4 py-2 text-center text-small", dark ? "border-b border-night-line bg-night-800 text-night-text" : "bg-ink text-white")}>
           {a.text}
           {a.link && <Link href={a.link} className="ml-2 font-medium underline underline-offset-2">{a.link_label || "Learn more"}</Link>}
         </div>
@@ -49,7 +49,7 @@ export function PublicHeader({ dark }: { dark?: boolean }) {
       </div>
       {open && (
         <div className="border-t border-line bg-white px-4 pb-5 pt-2 lg:hidden">
-          {NAV.map((n) => <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="block py-3 text-[15px]">{n.label}</Link>)}
+          {NAV.map((n) => <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="block py-3 text-body">{n.label}</Link>)}
           <div className="mt-3 flex gap-3">
             {user ? <Button href="/app" className="flex-1">Open dashboard</Button> : (
               <>
@@ -89,7 +89,7 @@ export function PublicFooter() {
         </div>
       </div>
       <div className="border-t border-night-line">
-        <p className="mx-auto max-w-content px-4 py-5 font-mono text-[12px] text-night-mute sm:px-6">
+        <p className="mx-auto max-w-content px-4 py-5 font-mono text-xs text-night-mute sm:px-6">
           © {new Date().getFullYear()} Bespoke. Salary figures are estimates from public job postings, not guarantees. Job listings link to their original sources.
         </p>
       </div>

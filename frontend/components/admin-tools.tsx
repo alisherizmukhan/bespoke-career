@@ -40,9 +40,9 @@ export function ExportButtons({ dataset, size = "sm" }: { dataset: string; size?
 export function Stat({ label, value, sub, className }: { label: string; value: React.ReactNode; sub?: React.ReactNode; className?: string }) {
   return (
     <div className={cx("rounded-lg border border-line bg-white p-5", className)}>
-      <p className="text-[13px] text-ink-muted">{label}</p>
-      <p className="tabular mt-2 text-[28px] font-semibold leading-none tracking-[-0.02em]">{value}</p>
-      {sub && <p className="mt-2 text-[13px] text-ink-muted">{sub}</p>}
+      <p className="text-small text-ink-muted">{label}</p>
+      <p className="tabular mt-2 text-h3 font-semibold leading-none tracking-[-0.02em]">{value}</p>
+      {sub && <p className="mt-2 text-small text-ink-muted">{sub}</p>}
     </div>
   );
 }

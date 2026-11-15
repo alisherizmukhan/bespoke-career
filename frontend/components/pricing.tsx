@@ -59,7 +59,7 @@ export function limitText(v: number | undefined, flag?: boolean) {
 export function IntervalToggle({ value, onChange, savePct }: { value: Interval; onChange: (v: Interval) => void; savePct: number }) {
   const opt = (v: Interval, label: React.ReactNode) => (
     <button type="button" role="tab" aria-selected={value === v} onClick={() => onChange(v)}
-      className={cx("inline-flex h-9 items-center gap-2 rounded-sm px-4 text-[14px] font-medium transition-colors duration-150",
+      className={cx("inline-flex h-9 items-center gap-2 rounded-sm px-4 text-sm font-medium transition-colors duration-150",
         value === v ? "bg-ink text-white" : "text-ink-muted hover:text-ink")}>
       {label}
     </button>
@@ -67,7 +67,7 @@ export function IntervalToggle({ value, onChange, savePct }: { value: Interval; 
   return (
     <div role="tablist" aria-label="Billing period" className="inline-flex gap-1 rounded-md border border-line bg-white p-1">
       {opt("month", "Monthly")}
-      {opt("year", <>Yearly{savePct > 0 && <span className={cx("rounded-sm px-1.5 py-0.5 text-[12px]", value === "year" ? "bg-accent text-white" : "bg-accent-soft text-accent-ink")}>Save {savePct}%</span>}</>)}
+      {opt("year", <>Yearly{savePct > 0 && <span className={cx("rounded-sm px-1.5 py-0.5 text-xs", value === "year" ? "bg-accent text-white" : "bg-accent-soft text-accent-ink")}>Save {savePct}%</span>}</>)}
     </div>
   );
 }
@@ -77,8 +77,8 @@ export function PlanPrice({ plan, interval, onPickYearly }: { plan: PlanData; in
   if (!plan.price_month) {
     return (
       <div className="mt-5">
-        <p className="tabular text-[40px] font-semibold leading-none tracking-[-0.02em]">$0</p>
-        <p className="mt-2 text-[13px] text-ink-muted">Free forever, no card needed</p>
+        <p className="tabular text-h1 font-semibold leading-none tracking-[-0.02em]">$0</p>
+        <p className="mt-2 text-small text-ink-muted">Free forever, no card needed</p>
       </div>
     );
   }
@@ -87,25 +87,25 @@ export function PlanPrice({ plan, interval, onPickYearly }: { plan: PlanData; in
     return (
       <div className="mt-5">
         <p className="flex items-baseline gap-2">
-          <span className="tabular text-[40px] font-semibold leading-none tracking-[-0.02em]">{usd(perMonth)}</span>
+          <span className="tabular text-h1 font-semibold leading-none tracking-[-0.02em]">{usd(perMonth)}</span>
           <span className="text-ink-muted">/ mo</span>
-          <s className="tabular text-[15px] text-ink-faint">{usd(plan.price_month)}</s>
+          <s className="tabular text-body text-ink-faint">{usd(plan.price_month)}</s>
         </p>
-        <p className="mt-2 text-[13px] text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_year)}</span> once a year</p>
-        <p className="mt-1 text-[13px] font-medium text-success">Save {usd(saved)} a year{freeMonths >= 2 ? `, like ${freeMonths} months free` : ""}</p>
+        <p className="mt-2 text-small text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_year)}</span> once a year</p>
+        <p className="mt-1 text-small font-medium text-success">Save {usd(saved)} a year{freeMonths >= 2 ? `, like ${freeMonths} months free` : ""}</p>
       </div>
     );
   }
   return (
     <div className="mt-5">
       <p className="flex items-baseline gap-2">
-        <span className="tabular text-[40px] font-semibold leading-none tracking-[-0.02em]">{usd(plan.price_month)}</span>
+        <span className="tabular text-h1 font-semibold leading-none tracking-[-0.02em]">{usd(plan.price_month)}</span>
         <span className="text-ink-muted">/ mo</span>
       </p>
-      <p className="mt-2 text-[13px] text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_month)}</span> every month</p>
+      <p className="mt-2 text-small text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_month)}</span> every month</p>
       {onPickYearly
-        ? <button type="button" onClick={onPickYearly} className="link mt-1 text-left text-[13px] font-medium">Pay yearly: {usd(perMonth)}/mo, save {usd(saved)}</button>
-        : <p className="mt-1 text-[13px] text-ink-muted">Or {usd(perMonth)}/mo billed yearly</p>}
+        ? <button type="button" onClick={onPickYearly} className="link mt-1 text-left text-small font-medium">Pay yearly: {usd(perMonth)}/mo, save {usd(saved)}</button>
+        : <p className="mt-1 text-small text-ink-muted">Or {usd(perMonth)}/mo billed yearly</p>}
     </div>
   );
 }
@@ -116,25 +116,25 @@ export function PlanCard({ plan, interval, onPickYearly, featured }: { plan: Pla
   const unit = perResume(plan, interval);
   return (
     <div className={cx("relative flex flex-col rounded-lg border bg-white p-6", featured ? "border-ink shadow-pop" : "border-line")}>
-      {featured && <p className="absolute -top-3 left-6 rounded-sm bg-ink px-2 py-0.5 font-mono text-[12px] text-white">Recommended</p>}
-      <p className="text-[16px] font-semibold">{plan.name}</p>
-      {plan.tagline && <p className="mt-1 min-h-[40px] text-[13px] text-ink-muted">{plan.tagline}</p>}
+      {featured && <p className="absolute -top-3 left-6 rounded-sm bg-ink px-2 py-0.5 font-mono text-xs text-white">Recommended</p>}
+      <p className="text-base font-semibold">{plan.name}</p>
+      {plan.tagline && <p className="mt-1 min-h-[40px] text-small text-ink-muted">{plan.tagline}</p>}
       <PlanPrice plan={plan} interval={interval} onPickYearly={onPickYearly} />
       {plan.price_month > 0 && (
-        <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line text-[12px]">
-          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-[14px] font-semibold text-ink">{usd(Math.round(daily * 100) / 100)}</p><p className="text-ink-muted">a day</p></div>
-          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-[14px] font-semibold text-ink">{usd(Math.round(unit * 100) / 100)}</p><p className="text-ink-muted">per tailored resume</p></div>
+        <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line text-xs">
+          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-sm font-semibold text-ink">{usd(Math.round(daily * 100) / 100)}</p><p className="text-ink-muted">a day</p></div>
+          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-sm font-semibold text-ink">{usd(Math.round(unit * 100) / 100)}</p><p className="text-ink-muted">per tailored resume</p></div>
         </div>
       )}
-      <p className="mt-6 text-[12px] font-medium text-ink">What you get</p>
-      <ul className="mt-2 flex-1 space-y-2.5 text-[13px] text-ink-muted">
+      <p className="mt-6 text-xs font-medium text-ink">What you get</p>
+      <ul className="mt-2 flex-1 space-y-2.5 text-small text-ink-muted">
         {plan.features.map((x) => <li key={x} className="flex gap-2"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink" />{x}</li>)}
       </ul>
       <Button href={plan.price_month ? `/register?plan=${plan.slug}&interval=${interval}` : "/register"}
         variant={featured ? "primary" : "secondary"} className="mt-6">
         {plan.price_month ? (interval === "year" ? `Get ${plan.name} yearly` : `Choose ${plan.name}`) : "Start free"}
       </Button>
-      <p className="mt-2 text-center text-[12px] text-ink-faint">{plan.price_month ? "Cancel anytime, keep access to the end of the period" : "Upgrade whenever your search picks up"}</p>
+      <p className="mt-2 text-center text-xs text-ink-faint">{plan.price_month ? "Cancel anytime, keep access to the end of the period" : "Upgrade whenever your search picks up"}</p>
     </div>
   );
 }
@@ -149,7 +149,7 @@ export function PricingGrid({ plans, align = "start" }: { plans: PlanData[]; ali
       <div className={cx("flex flex-col gap-3 sm:flex-row sm:items-center", align === "center" ? "items-center sm:justify-center" : "items-start")}>
         <IntervalToggle value={interval} onChange={setInterval} savePct={pct} />
         {pro && pct > 0 && (
-          <p className="text-[13px] text-ink-muted">
+          <p className="text-small text-ink-muted">
             {interval === "year"
               ? <>Yearly plans cost up to {pct}% less than paying monthly</>
               : <>Paying monthly costs <span className="font-medium text-ink">{usd(annualMath(pro).saved)} more a year</span> on Career Pro</>}
@@ -159,7 +159,7 @@ export function PricingGrid({ plans, align = "start" }: { plans: PlanData[]; ali
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {plans.map((p) => <PlanCard key={p.slug} plan={p} interval={interval} featured={p.slug === "pro"} onPickYearly={() => setInterval("year")} />)}
       </div>
-      <ul className={cx("mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-ink-muted", align === "center" && "justify-center")}>
+      <ul className={cx("mt-6 flex flex-wrap gap-x-6 gap-y-2 text-small text-ink-muted", align === "center" && "justify-center")}>
         {["Free plan with no card", "Switch or cancel from Plan & billing at any time", "Unused paid time is never cut short", "Your resumes and tracker stay yours on every plan"].map((t) => (
           <li key={t} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-success" />{t}</li>
         ))}
@@ -172,7 +172,7 @@ export function PricingGrid({ plans, align = "start" }: { plans: PlanData[]; ali
 export function CompareTable({ plans }: { plans: PlanData[] }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-line bg-white">
-      <table className="w-full min-w-[640px] text-[14px]">
+      <table className="w-full min-w-[640px] text-sm">
         <thead>
           <tr className="border-b border-line">
             <th className="px-5 py-4 text-left font-medium text-ink-muted">What you get</th>
@@ -217,25 +217,25 @@ export function PayoffCalculator({ plan }: { plan?: PlanData }) {
   return (
     <div className="grid gap-6 rounded-lg border border-line bg-white p-6 lg:grid-cols-[1fr_1.4fr] lg:p-8">
       <div>
-        <label htmlFor="salary" className="text-[14px] font-medium">Salary you're aiming for</label>
-        <p className="tabular mt-2 text-[40px] font-semibold leading-none tracking-[-0.02em]">{usd(salary)}</p>
+        <label htmlFor="salary" className="text-sm font-medium">Salary you're aiming for</label>
+        <p className="tabular mt-2 text-h1 font-semibold leading-none tracking-[-0.02em]">{usd(salary)}</p>
         <input id="salary" type="range" min={40000} max={250000} step={5000} value={salary} onChange={(e) => setSalary(+e.target.value)}
-          className="mt-5 w-full accent-[#6c47d9]" />
-        <div className="mt-1 flex justify-between font-mono text-[12px] text-ink-faint"><span>$40k</span><span>$250k</span></div>
-        <p className="mt-5 text-[13px] text-ink-muted">{plan.name} costs {usd(yearly)} a year, {usd(Math.round((yearly / 52) * 100) / 100)} a week.</p>
+          className="mt-5 w-full accent-accent" />
+        <div className="mt-1 flex justify-between font-mono text-xs text-ink-faint"><span>$40k</span><span>$250k</span></div>
+        <p className="mt-5 text-small text-ink-muted">{plan.name} costs {usd(yearly)} a year, {usd(Math.round((yearly / 52) * 100) / 100)} a week.</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-md bg-lavender-50 p-5">
-          <p className="text-[13px] text-ink-muted">Land the job one week sooner</p>
-          <p className="tabular mt-2 text-[28px] font-semibold leading-none">{usd(Math.round(week))}</p>
-          <p className="mt-2 text-[13px] text-ink-muted">in pay you'd otherwise miss, <span className="font-medium text-ink">{(week / yearly).toFixed(1)}×</span> a year of {plan.name}</p>
+          <p className="text-small text-ink-muted">Land the job one week sooner</p>
+          <p className="tabular mt-2 text-h3 font-semibold leading-none">{usd(Math.round(week))}</p>
+          <p className="mt-2 text-small text-ink-muted">in pay you'd otherwise miss, <span className="font-medium text-ink">{(week / yearly).toFixed(1)}×</span> a year of {plan.name}</p>
         </div>
         <div className="rounded-md bg-lavender-50 p-5">
-          <p className="text-[13px] text-ink-muted">Negotiate just 1% higher</p>
-          <p className="tabular mt-2 text-[28px] font-semibold leading-none">{usd(Math.round(raise))}</p>
-          <p className="mt-2 text-[13px] text-ink-muted">more every year, <span className="font-medium text-ink">{(raise / yearly).toFixed(1)}×</span> a year of {plan.name}</p>
+          <p className="text-small text-ink-muted">Negotiate just 1% higher</p>
+          <p className="tabular mt-2 text-h3 font-semibold leading-none">{usd(Math.round(raise))}</p>
+          <p className="mt-2 text-small text-ink-muted">more every year, <span className="font-medium text-ink">{(raise / yearly).toFixed(1)}×</span> a year of {plan.name}</p>
         </div>
-        <p className="text-[12px] text-ink-faint sm:col-span-2">Examples only. Bespoke can't promise an outcome; the math shows how small a result covers the plan.</p>
+        <p className="text-xs text-ink-faint sm:col-span-2">Examples only. Bespoke can't promise an outcome; the math shows how small a result covers the plan.</p>
       </div>
     </div>
   );
@@ -256,10 +256,10 @@ export function PricingFaq({ items }: { items?: { q: string; a: string }[] }) {
     <div className="divide-y divide-line rounded-lg border border-line bg-white">
       {list.map(([q, a]) => (
         <details key={q} className="group px-5 py-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body font-medium">
             {q}<span className="text-ink-faint transition-transform group-open:rotate-45">+</span>
           </summary>
-          <p className="mt-2 text-[14px] leading-6 text-ink-muted">{a}</p>
+          <p className="mt-2 text-sm leading-6 text-ink-muted">{a}</p>
         </details>
       ))}
     </div>

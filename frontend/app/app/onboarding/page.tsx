@@ -41,7 +41,7 @@ export default function Onboarding() {
   return (
     <div className="mx-auto max-w-3xl">
       <span className="eyebrow">Set up your profile</span>
-      <h1 className="h-display mt-4 text-[32px]">{s.title}</h1>
+      <h1 className="h-display mt-4 text-h2">{s.title}</h1>
       <p className="mt-1 text-ink-muted">{s.sub}</p>
       <ol className="mt-6 flex gap-2" aria-label="Progress">
         {STEPS.map((x, i) => (

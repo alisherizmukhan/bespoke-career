@@ -45,7 +45,7 @@ export default function Crm() {
 
           <div className="mt-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
             <div className="rounded-lg border border-line bg-white p-5">
-              <p className="text-[13px] text-ink-muted">Customers by stage</p>
+              <p className="text-small text-ink-muted">Customers by stage</p>
               <div className="mt-3 flex h-3 overflow-hidden rounded-sm bg-lavender-100">
                 {o.stages.filter((s: any) => s.count).map((s: any) => (
                   <div key={s.stage} className={cx(STAGE_TONE[s.stage])} style={{ width: `${(s.count / totalStage) * 100}%` }} title={`${s.label}: ${s.count}`} />
@@ -56,21 +56,21 @@ export default function Crm() {
                   <button key={s.stage} type="button" onClick={() => setStage(stage === s.stage ? "" : s.stage)}
                     className={cx("rounded-md border px-3 py-2 text-left transition-colors", stage === s.stage ? "border-ink" : "border-line hover:border-violet-300")}>
                     <StagePill stage={s.stage} />
-                    <p className="tabular mt-1.5 text-[20px] font-semibold">{s.count}</p>
+                    <p className="tabular mt-1.5 text-xl font-semibold">{s.count}</p>
                   </button>
                 ))}
               </div>
             </div>
             <div className="rounded-lg border border-line bg-white p-5">
-              <p className="text-[13px] text-ink-muted">Signups, last 30 days</p>
-              <p className="tabular mt-1 text-[24px] font-semibold">{o.signups.reduce((a: number, s: any) => a + s.count, 0)}</p>
+              <p className="text-small text-ink-muted">Signups, last 30 days</p>
+              <p className="tabular mt-1 text-2xl font-semibold">{o.signups.reduce((a: number, s: any) => a + s.count, 0)}</p>
               <div className="mt-3 flex h-24 items-end gap-[3px]">
                 {o.signups.map((s: any, i: number) => (
                   <div key={s.day} title={`${s.day}: ${s.count}`} className={cx("flex-1 rounded-t-[2px]", i === o.signups.length - 1 ? "bg-accent" : "bg-violet-200")}
                     style={{ height: `${Math.max(4, (s.count / maxSignup) * 100)}%` }} />
                 ))}
               </div>
-              <div className="mt-1 flex justify-between font-mono text-[11px] text-ink-faint"><span>{o.signups[0]?.day.slice(5)}</span><span>Today</span></div>
+              <div className="mt-1 flex justify-between font-mono text-xs text-ink-faint"><span>{o.signups[0]?.day.slice(5)}</span><span>Today</span></div>
             </div>
           </div>
         </>
@@ -94,14 +94,14 @@ export default function Crm() {
           <option value="newest">Newest first</option><option value="revenue">Lifetime revenue</option><option value="mrr">MRR</option>
           <option value="engagement">Engagement</option><option value="last_seen">Recently active</option><option value="follow_up">Follow-up date</option>
         </Select>
-        <span className="ml-auto text-[13px] text-ink-muted">{list.data?.total ?? "…"} customers</span>
+        <span className="ml-auto text-small text-ink-muted">{list.data?.total ?? "…"} customers</span>
       </div>
 
       <div className="mt-3">
         {list.isLoading ? <LoadingCards /> : list.isError ? <ErrorState error={list.error} retry={() => list.refetch()} /> : (
           <div className="overflow-x-auto rounded-lg border border-line bg-white">
             <table className="w-full min-w-[1080px] text-sm">
-              <thead className="border-b border-line bg-lavender-50 text-left text-[13px] text-ink-muted">
+              <thead className="border-b border-line bg-lavender-50 text-left text-small text-ink-muted">
                 <tr>{["Customer", "Stage", "Plan", "MRR", "Lifetime", "Activity", "Engagement", "Last seen", "Follow-up", "Tags"].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr>
               </thead>
               <tbody>

@@ -17,17 +17,17 @@ export function AuthLayout({ title, subtitle, children }: { title: string; subti
       <div className="flex flex-col px-4 py-8 sm:px-10">
         <Logo />
         <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10">
-          <h1 className="h-display text-[32px] leading-tight">{title}</h1>
-          {subtitle && <p className="mt-2 text-[15px] text-ink-muted">{subtitle}</p>}
+          <h1 className="h-display text-h2 leading-tight">{title}</h1>
+          {subtitle && <p className="mt-2 text-body text-ink-muted">{subtitle}</p>}
           <div className="mt-8">{children}</div>
         </div>
       </div>
       <div className="relative hidden overflow-hidden bg-night-900 text-night-text lg:block">
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="max-w-md">
-            <p className="font-mono text-[12px] text-night-mute">Bespoke</p>
-            <p className="mt-4 font-display font-semibold text-[44px] leading-[1.05]">Your salary range, resume and applications in one place</p>
-            <ul className="mt-8 space-y-3 text-[15px] text-night-soft">
+            <p className="font-mono text-xs text-night-mute">Bespoke</p>
+            <p className="mt-4 font-display font-semibold text-display-sm leading-[1.05]">Your salary range, resume and applications in one place</p>
+            <ul className="mt-8 space-y-3 text-body text-night-soft">
               <li>• Profession-aware resumes that never invent facts</li>
               <li>• Salary ranges from live postings with disclosed pay</li>
               <li>• An AI assistant grounded in your own search</li>
