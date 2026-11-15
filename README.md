@@ -99,3 +99,10 @@ bcrypt password hashing, JWT sessions, per-route ownership checks (cross-user ac
 rate limiting on auth/AI/uploads, file-type sniffing and size limits, private storage with short-lived HMAC-signed
 URLs, append-only audit log, data export and deletion. Billing runs in test mode until a payment provider is
 connected. Compliance (GDPR, CCPA/CPRA, COPPA) requires legal review before launch — the app does not claim it.
+
+## Documentation (Russian)
+
+Full project documentation lives in [`docs/`](docs/README.md), with two ready PDFs:
+[`docs/Bespoke-Documentation.pdf`](docs/Bespoke-Documentation.pdf) (everything) and
+[`docs/Bespoke-User-Guide.pdf`](docs/Bespoke-User-Guide.pdf) (step-by-step user guide).
+Rebuild them with `python docs/build_pdf.py`.
