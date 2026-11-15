@@ -2,10 +2,10 @@
 
 *Your career, thoughtfully built.* Bespoke (spec: *Bespoke PRD v1*) connects a shared career profile, Resume
 Intelligence, Salary Intelligence, a live US job board, a Job Tracker and an AI Career Assistant. The visual
-language follows the CareNear brand book (violet / lavender / white / ink, Inter + a bold geometric display face).
+language is a quiet ink-and-paper system with one violet accent, Instrument Sans and IBM Plex Mono (see `docs/08-design.md`).
 
 ```
-carenear/
+bespoke/
 ├── backend/    FastAPI · SQLAlchemy · Alembic · PostgreSQL — REST API under /api/v1
 └── frontend/   Next.js 15 · React 19 · TypeScript · Tailwind · TanStack Query · React Hook Form + Zod
 ```

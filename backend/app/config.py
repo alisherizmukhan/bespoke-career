@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     env: str = "development"
-    database_url: str = "sqlite:///./carenear.db"
+    database_url: str = "sqlite:///./bespoke.db"
     jwt_secret: str = "dev-only-change-me"
     jwt_expires_minutes: int = 60 * 24 * 7
     file_signing_ttl_seconds: int = 60 * 30

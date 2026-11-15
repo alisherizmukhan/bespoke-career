@@ -20,7 +20,7 @@ from ..models import IngestionRun, Job, JobSource, utcnow
 from . import parse
 from .sources import FETCHERS
 
-log = logging.getLogger("carenear.ingest")
+log = logging.getLogger("bespoke.ingest")
 settings = get_settings()
 
 TALENT_QUERIES = [
