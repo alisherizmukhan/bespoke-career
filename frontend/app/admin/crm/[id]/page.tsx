@@ -56,6 +56,7 @@ export default function Customer() {
           <Select value={d.plan} onChange={(e) => confirm(`Give ${d.email} the ${e.target.value} plan?`) && userAct.mutate({ action: "grant_plan", plan: e.target.value })} className="w-[140px]" aria-label="Grant plan">
             {["free", "plus", "pro", "family"].map((p) => <option key={p} value={p}>Plan: {p}</option>)}
           </Select>
+          <Button variant="secondary" onClick={() => confirm(`Give ${d.email} their full monthly allowance again?`) && userAct.mutate({ action: "reset_usage" })}>Reset usage</Button>
           {d.account_status === "active"
             ? <Button variant="danger" onClick={() => confirm(`Suspend ${d.email}?`) && userAct.mutate({ action: "suspend" })}>Suspend</Button>
             : <Button variant="secondary" onClick={() => userAct.mutate({ action: "restore" })}>Restore</Button>}

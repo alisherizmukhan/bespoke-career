@@ -30,7 +30,7 @@ Bespoke — веб-сервис для поиска работы в США. В �
 
 | Роль | Email | Пароль | Что есть в аккаунте |
 |---|---|---|---|
-| Демо-пользователь | `alex@demo.bespoke.app` | `DemoBespoke2026` | Заполненный профиль, резюме, отклики, интервью |
+| Демо-пользователь | `alex@demo.bespoke.app` | `DemoBespoke2026` | Career Pro (тестовая подписка): заполненный профиль, резюме, отклики, интервью. Лимиты обнуляются при каждом деплое |
 | Тест, бесплатный план | `jordan@demo.bespoke.app` | `TestBespoke2026` | Выпускник, Бостон |
 | Тест, Career Plus | `maya@demo.bespoke.app` | `TestBespoke2026` | Меняет профессию, Чикаго |
 | Тест, Career Pro | `priya@demo.bespoke.app` | `TestBespoke2026` | Сан-Франциско |

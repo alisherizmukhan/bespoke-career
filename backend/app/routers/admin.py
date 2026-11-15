@@ -14,7 +14,7 @@ from ..db import get_db
 from ..ingest import runner
 from ..ingest.sources import ATTRIBUTION, FETCHERS
 from ..models import (AICall, AssistantMessage, AuditLog, IngestionRun, Job, JobApplication, JobSource, Payment, Plan,
-                      Resume, ResumeGuideline, ResumeVersion, SalaryAssessment, Subscription, User, UserProfile, utcnow)
+                      Resume, ResumeGuideline, ResumeVersion, SalaryAssessment, Subscription, UsageRecord, User, UserProfile, utcnow)
 from ..security import client_ip, require_admin
 from ..services import audit
 
@@ -77,7 +77,7 @@ def users(q: str | None = None, status: str | None = None, admin: User = Depends
 
 
 class UserAction(BaseModel):
-    action: Literal["suspend", "restore", "make_admin", "grant_plan"]
+    action: Literal["suspend", "restore", "make_admin", "grant_plan", "reset_usage"]
     plan: str | None = None
 
 
@@ -95,6 +95,10 @@ def user_action(uid: uuid.UUID, body: UserAction, request: Request, admin: User 
         u.account_status = "active"
     elif body.action == "make_admin":
         u.role = "admin"
+    elif body.action == "reset_usage":
+        # Gives the user their full monthly allowance again (support goodwill, demos)
+        from ..entitlements import period
+        db.query(UsageRecord).filter(UsageRecord.user_id == u.id, UsageRecord.period == period()).delete()
     elif body.action == "grant_plan":
         if not db.scalar(select(Plan).where(Plan.slug == body.plan)):
             raise HTTPException(404, "Plan not found.")

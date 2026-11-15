@@ -181,6 +181,8 @@ def test_admin_everything(client):
     assert client.patch(f"{API}/admin/users/{uid}", headers=admin, json={"action": "suspend"}).status_code == 200
     assert client.get(f"{API}/auth/me", headers=u).status_code in (401, 403)
     assert client.patch(f"{API}/admin/users/{uid}", headers=admin, json={"action": "restore"}).status_code == 200
+    # Suspension revoked the old session; the restored user signs in again
+    u = {"Authorization": f"Bearer {client.post(f'{API}/auth/login', json={'email': 'cust@test.io', 'password': 'Passw0rd!x'}).json()['access_token']}"}
 
     plans = client.get(f"{API}/admin/plans", headers=admin).json()
     assert len(plans) == 4

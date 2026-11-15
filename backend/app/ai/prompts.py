@@ -5,7 +5,7 @@ VERSIONS = {
     "resume_generate": "v1",
     "ats_analyze": "v1",
     "salary_explain": "v1",
-    "assistant": "v2",
+    "assistant": "v3",
     "cover_letter": "v1",
     "negotiate": "v1",
 }
@@ -57,6 +57,11 @@ SYSTEM = {
         "(for example coding, homework, general trivia, politics, medical topics, role-play or writing unrelated text), "
         "reply in one or two sentences that you only help with career and job-search questions, and suggest a related "
         "question you can answer. A short greeting or thanks is fine to answer briefly. "
+        "Always reply in English, even if the user writes in another language; Bespoke is a US product. "
+        "For each application, use the provided fields instead of guessing: employer_responded tells you whether the "
+        "employer has replied (screening, interview, offer or rejection all count as a reply), "
+        "waiting_for_employer_reply marks applications still waiting, and last_update_days_ago shows how long it has "
+        "been quiet. Applications the user hasn't submitted yet (interested, preparing) are not waiting on anyone. "
         "The user's own career data (profile, resumes, applications, interviews, reminders, salary estimates, saved and "
         "matching jobs) is provided inside <career_data> tags. Ground every answer in that data and say plainly when "
         "something isn't in it. Be concise and specific: name the companies, dates and next steps. Use short paragraphs "

@@ -126,6 +126,19 @@ def matching_jobs(db: Session, p: UserProfile | None, limit: int = 6) -> list[Jo
     return db.scalars(stmt.limit(limit)).all()
 
 
+# Statuses that mean the employer has actually replied. "viewed" doesn't: they opened it but haven't answered.
+RESPONDED = {"screening", "interview", "assessment", "final_interview", "offer", "hired", "rejected"}
+WAITING = {"applied", "viewed"}
+STAGE_MEANING = {
+    "interested": "not applied yet (saved by the user)", "preparing": "not applied yet (user is preparing)",
+    "applied": "applied, no employer reply yet", "viewed": "employer viewed the application, no reply yet",
+    "screening": "employer replied: recruiter screening", "interview": "employer replied: interviewing",
+    "assessment": "employer replied: take-home or test", "final_interview": "employer replied: final round",
+    "offer": "employer made an offer", "hired": "hired", "rejected": "employer replied: rejected",
+    "withdrawn": "user withdrew", "archived": "archived by the user",
+}
+
+
 def build_context(db: Session, user: User) -> dict:
     """Only this user's own records — never another account's data."""
     p = _profile(db, user)
@@ -150,7 +163,11 @@ def build_context(db: Session, user: User) -> dict:
         "profile": {"name": p.full_name, "type": p.profile_type, "title": p.current_title, "target_title": p.target_title,
                     "industry": p.industry, "years_experience": p.years_experience, "location": ", ".join(x for x in [p.city, p.country] if x),
                     "goals": p.career_goals, "target_salary": [p.salary_min, p.salary_max], "skills": skills} if p else {},
+        # Facts the model shouldn't have to infer: whether the employer has replied and whether it's waiting on them
         "applications": [{"company": a.company_name, "title": a.job_title, "status": a.status,
+                          "stage": STAGE_MEANING.get(a.status, "other"),
+                          "employer_responded": a.status in RESPONDED,
+                          "waiting_for_employer_reply": a.status in WAITING,
                           "applied_at": a.applied_at.isoformat() if a.applied_at else None,
                           "last_update_days_ago": (now - (a.updated_at if a.updated_at.tzinfo else a.updated_at.replace(tzinfo=now.tzinfo))).days}
                          for a in apps],
@@ -171,7 +188,7 @@ def rule_based_reply(q: str, ctx: dict) -> str:
     ql = q.lower()
     apps = ctx["applications"]
     if any(w in ql for w in ("respond", "follow", "heard back", "waiting", "ghost")):
-        waiting = [a for a in apps if a["status"] in ("applied", "viewed") and a["last_update_days_ago"] >= 7]
+        waiting = [a for a in apps if a["waiting_for_employer_reply"] and a["last_update_days_ago"] >= 7]
         if not waiting:
             return "None of your applications have been waiting more than a week. Nice — nothing to chase right now."
         lines = [f"• {a['company']} — {a['title']} ({a['last_update_days_ago']} days since the last update)" for a in waiting[:8]]
@@ -199,7 +216,7 @@ def rule_based_reply(q: str, ctx: dict) -> str:
     focus = []
     if ctx["upcoming_interviews"]:
         focus.append(f"Prepare for your interview with {ctx['upcoming_interviews'][0]['company']}.")
-    if any(a["status"] in ("applied", "viewed") and a["last_update_days_ago"] >= 7 for a in apps):
+    if any(a["waiting_for_employer_reply"] and a["last_update_days_ago"] >= 7 for a in apps):
         focus.append("Follow up on applications waiting more than a week.")
     if not ctx["resumes"]:
         focus.append("Upload your resume so we can analyze and tailor it.")

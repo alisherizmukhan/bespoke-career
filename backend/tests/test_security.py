@@ -114,3 +114,27 @@ def test_password_change_revokes_old_sessions_and_delete_wipes_data(client):
     assert db.query(JobApplication).count() == 0
     assert all(s.status == "canceled" for s in db.query(Subscription).all())
     db.close()
+
+
+def test_assistant_context_marks_employer_replies_and_admin_can_reset_usage(client):
+    from app.routers.salary_assistant import build_context
+    from app.models import User
+    h = register(client)
+    for company, status in [("Acme", "applied"), ("Globex", "interview"), ("Initech", "interested"), ("Umbrella", "viewed")]:
+        client.post(f"{API}/applications", headers=h, json={"company_name": company, "job_title": "Analyst", "status": status})
+    db = SessionLocal()
+    user = db.query(User).filter(User.email == "a@test.io").one()
+    apps = {a["company"]: a for a in build_context(db, user)["applications"]}
+    db.close()
+    assert apps["Globex"]["employer_responded"] is True and apps["Globex"]["waiting_for_employer_reply"] is False
+    assert apps["Acme"]["employer_responded"] is False and apps["Acme"]["waiting_for_employer_reply"] is True
+    assert apps["Umbrella"]["waiting_for_employer_reply"] is True
+    assert apps["Initech"]["employer_responded"] is False and apps["Initech"]["waiting_for_employer_reply"] is False
+
+    client.post(f"{API}/assistant/messages", headers=h, json={"message": "What should I do next?"})
+    usage = lambda: client.get(f"{API}/billing/subscription", headers=h).json()["usage"]["features"]["assistant_messages"]["used"]
+    assert usage() == 1
+    admin = make_admin(client)
+    uid = client.get(f"{API}/auth/me", headers=h).json()["id"]
+    assert client.patch(f"{API}/admin/users/{uid}", headers=admin, json={"action": "reset_usage"}).status_code == 200
+    assert usage() == 0

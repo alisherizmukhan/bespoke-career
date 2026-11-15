@@ -122,7 +122,7 @@
 | Метод | Путь | Что делает |
 |---|---|---|
 | GET | `/admin/metrics` | Сводные показатели |
-| GET / PATCH | `/admin/users`, `/admin/users/{id}` | Список; блокировка, разблокировка, выдача плана, назначение админом |
+| GET / PATCH | `/admin/users`, `/admin/users/{id}` | Список; блокировка, разблокировка, выдача плана, сброс месячных лимитов, назначение админом |
 | GET / PATCH | `/admin/plans`, `/admin/plans/{slug}` | Тарифы: цены, лимиты, преимущества |
 | GET / POST / PATCH / DELETE | `/admin/job-sources[/{id}]` | Источники вакансий |
 | POST | `/admin/job-sources/run` | Запустить сбор вакансий сейчас |

@@ -11,8 +11,8 @@ from .config import get_settings
 from .db import SessionLocal
 from .entitlements import PLAN_DEFAULTS
 from .ingest.runner import ensure_default_sources
-from .models import (ApplicationEvent, ApplicationInterview, DocumentType, Industry, JobApplication, Occupation, Plan,
-                     Reminder, Resume, ResumeGuideline, ResumeVersion, SalarySource, User, UserProfile, UserSkill, utcnow)
+from .models import (UsageRecord, ApplicationEvent, ApplicationInterview, DocumentType, Industry, JobApplication, Occupation, Plan,
+                     Reminder, Resume, ResumeGuideline, ResumeVersion, SalarySource, Subscription, User, UserProfile, UserSkill, utcnow)
 from .resume.knowledge import DOCUMENT_TYPES, GUIDELINES, INDUSTRIES, OCCUPATIONS
 from .resume.schema import Certification, Contact, Education, Experience, Project, ResumeContent
 from .security import hash_password
@@ -67,6 +67,18 @@ def run() -> None:
             print("seed: demo account created")
         if settings.seed_demo_data:
             _test_users(db)
+            # The demo account is for live presentations: start every deploy with a full monthly allowance
+            demo = db.scalar(select(User).where(User.email == DEMO_EMAIL))
+            if demo:
+                n = db.query(UsageRecord).filter(UsageRecord.user_id == demo.id).delete()
+                # Demo runs on Career Pro (test subscription) so every feature, negotiation included, can be shown
+                if not db.scalar(select(Subscription).where(Subscription.user_id == demo.id, Subscription.status == "active")):
+                    db.add(Subscription(user_id=demo.id, plan_slug="pro", interval="year", status="active", provider="test",
+                                        current_period_end=utcnow() + timedelta(days=365)))
+                    print("seed: demo account moved to Career Pro (test)")
+                db.commit()
+                if n:
+                    print(f"seed: demo usage reset ({n} counters)")
     finally:
         db.close()
 
