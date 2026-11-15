@@ -1,6 +1,6 @@
 """Central entitlement service: plan lookup, monthly usage, limit checks.
 Limits live on the Plan rows (editable by admins); -1 means unlimited, 0 means not included."""
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
@@ -64,6 +64,13 @@ def active_subscription(db: Session, user: User) -> Subscription | None:
                 s.status = "expired"
                 db.commit()
                 return None
+            if s.provider == "stripe":
+                # Stripe renews through webhooks; keep access for a 3-day grace period, then wait for payment
+                if end + timedelta(days=3) < utcnow():
+                    s.status = "past_due"
+                    db.commit()
+                    return None
+                return s
             # test-mode renewal: roll the period forward
             from .routers.billing import renew_test_subscription
             renew_test_subscription(db, s)

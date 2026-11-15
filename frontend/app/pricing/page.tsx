@@ -15,7 +15,7 @@ export default function Pricing() {
       <section className="border-b border-line bg-lavender-50">
         <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
           <div className="text-center">
-            <p className="eyebrow">Billing runs in test mode during the beta</p>
+            <p className="eyebrow">{q.data?.provider === "stripe" ? (q.data.live ? "Secure payments by Stripe" : "Payments by Stripe, test mode") : "Billing runs in test mode during the beta"}</p>
             <h1 className="h-display mt-3 text-[40px] sm:text-[56px]">{c.pricing?.headline || "Plans for every stage of your search"}</h1>
             <p className="mx-auto mt-3 max-w-xl text-[17px] text-ink-muted">{c.pricing?.subhead || "Start free. When you're applying every week, Career Pro on the yearly plan costs less than a dollar a day, and you can cancel the moment you sign an offer."}</p>
           </div>

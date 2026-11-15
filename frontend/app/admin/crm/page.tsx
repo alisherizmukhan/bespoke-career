@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExportButtons, Stat, StagePill, STAGE_TONE, usd0 } from "@/components/admin-tools";
 import { ErrorState, Input, LoadingCards, PageHeader, Select, cx } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -20,6 +20,7 @@ export default function Crm() {
   const [plan, setPlan] = useState("");
   const [tag, setTag] = useState("");
   const [sort, setSort] = useState("newest");
+  useEffect(() => { const v = new URLSearchParams(window.location.search).get("q"); if (v) setQ(v); }, []);
   const ov = useQuery({ queryKey: ["crm-overview"], queryFn: () => api("/admin/crm/overview") });
   const list = useQuery({
     queryKey: ["crm-customers", q, stage, plan, tag, sort],

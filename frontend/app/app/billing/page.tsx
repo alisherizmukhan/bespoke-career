@@ -27,20 +27,37 @@ export default function Billing() {
   const refresh = () => ["subscription", "billing-history", "dashboard"].forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
   const change = useMutation({
     mutationFn: (v: Pick) => api(sub.data?.subscription ? "/billing/change-plan" : "/billing/checkout", { body: v }),
-    onSuccess: (_r: unknown, v: Pick) => { setInterval(v.interval); setPending(null); setLeaving(false); refresh(); },
+    onSuccess: (r: any, v: Pick) => {
+      if (r?.checkout_url) { window.location.href = r.checkout_url; return; }
+      setInterval(v.interval); setPending(null); setLeaving(false); refresh();
+      if (window.location.search) window.history.replaceState(null, "", "/app/billing");
+    },
   });
   const cancel = useMutation({ mutationFn: () => api("/billing/cancel", { method: "POST" }), onSuccess: () => { setLeaving(false); refresh(); } });
   const resume = useMutation({ mutationFn: () => api("/billing/resume", { method: "POST" }), onSuccess: refresh });
+  const portal = useMutation({ mutationFn: () => api("/billing/portal", { method: "POST" }), onSuccess: (r: any) => { window.location.href = r.url; } });
+  const [notice, setNotice] = useState<{ tone: "success" | "info" | "warning"; text: string } | null>(null);
+  const confirmPay = useMutation({
+    mutationFn: (session_id: string) => api("/billing/checkout/confirm", { body: { session_id } }),
+    onSuccess: (r: any) => {
+      setNotice(r.ok ? { tone: "success", text: `Payment received. Your plan is active.` } : { tone: "info", text: "Stripe is still processing the payment. This page will update in a moment." });
+      refresh();
+      window.history.replaceState(null, "", "/app/billing");
+    },
+  });
 
   // Arriving from the pricing page with a plan already chosen: open its summary.
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search);
+    if (qs.get("checkout") === "success" && qs.get("session_id")) { confirmPay.mutate(qs.get("session_id")!); return; }
+    if (qs.get("checkout") === "cancel") setNotice({ tone: "info", text: "Checkout was cancelled. You weren't charged." });
     const plan = qs.get("plan");
     if (plan && ["plus", "pro", "family"].includes(plan)) {
       const iv: Interval = qs.get("interval") === "month" ? "month" : "year";
       setInterval(iv);
       setPending({ plan, interval: iv });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => { if (pending) confirmRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }, [pending]);
 
@@ -55,13 +72,26 @@ export default function Billing() {
   const alreadyOn = pending && pending.plan === cur && s?.interval === pending.interval;
   const target = pending && !alreadyOn ? planList.find((p) => p.slug === pending.plan) : undefined;
   const cheaper = planList.find((p) => p.slug === "plus");
+  const stripe = sub.data.provider === "stripe";
 
   return (
     <div>
       <PageHeader title="Plan & billing" subtitle="Change plans anytime. Limits reset at the start of each month." />
-      <div className="mb-5 rounded-lg border border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning">
-        <b>Test mode.</b> Checkout records a test subscription and a test payment. No card is charged and no money moves.
-      </div>
+      {notice && (
+        <div className={cx("mb-5 rounded-lg px-4 py-3 text-sm", notice.tone === "success" ? "bg-success-soft text-success" : notice.tone === "warning" ? "bg-warning-soft text-warning" : "bg-accent-soft text-accent-ink")}>{notice.text}</div>
+      )}
+      {confirmPay.isPending && <div className="mb-5 rounded-lg bg-accent-soft px-4 py-3 text-sm text-accent-ink">Confirming your payment with Stripe…</div>}
+      {stripe ? (
+        !sub.data.live && (
+          <div className="mb-5 rounded-lg border border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning">
+            <b>Stripe test mode.</b> Checkout is the real Stripe flow, but no real money moves. Pay with the test card 4242 4242 4242 4242, any future date and any CVC.
+          </div>
+        )
+      ) : (
+        <div className="mb-5 rounded-lg border border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning">
+          <b>Test mode.</b> Checkout records a test subscription and a test payment. No card is charged and no money moves.
+        </div>
+      )}
 
       <Card className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex-1">
@@ -75,6 +105,7 @@ export default function Billing() {
             </p>
           )}
         </div>
+        {s?.provider === "stripe" && <Button variant="ghost" loading={portal.isPending} onClick={() => portal.mutate()}>Card and invoices</Button>}
         {s && (s.cancel_at_period_end
           ? <Button variant="secondary" loading={resume.isPending} onClick={() => resume.mutate()}>Keep my plan</Button>
           : !leaving && <Button variant="secondary" onClick={() => { setLeaving(true); setReason(null); }}>Cancel plan</Button>)}
@@ -118,7 +149,7 @@ export default function Billing() {
               </div>
             ) : null
           )}
-          <InlineError error={cancel.error || change.error} />
+          <InlineError error={cancel.error || change.error || portal.error} />
           <div className="mt-5 flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => setLeaving(false)}>Keep {curPlan.name}</Button>
             <Button variant="danger" loading={cancel.isPending} onClick={() => cancel.mutate()}>Cancel plan</Button>
@@ -153,7 +184,9 @@ export default function Billing() {
                 {pending.interval === "year" && <div className="flex justify-between gap-4"><dt className="text-ink-muted">Works out to</dt><dd className="tabular">{usd(annualMath(target).perMonth)} a month</dd></div>}
                 <div className="flex justify-between gap-4"><dt className="text-ink-muted">Next charge</dt><dd className="tabular">{date(addDays(pending.interval === "year" ? 365 : 30))}, same amount</dd></div>
                 <div className="flex justify-between gap-4"><dt className="text-ink-muted">Cancel</dt><dd>Anytime, access to the end of the period</dd></div>
-                <div className="flex justify-between gap-4 border-t border-line pt-2"><dt className="text-ink-muted">Charged in beta</dt><dd className="font-medium text-warning">$0, test mode</dd></div>
+                {stripe
+                  ? <div className="flex justify-between gap-4 border-t border-line pt-2"><dt className="text-ink-muted">Payment</dt><dd>{sub.data.live ? "Card, processed securely by Stripe" : "Stripe test mode, no real charge"}</dd></div>
+                  : <div className="flex justify-between gap-4 border-t border-line pt-2"><dt className="text-ink-muted">Charged in beta</dt><dd className="font-medium text-warning">$0, test mode</dd></div>}
               </dl>
               <div>
                 <p className="text-[13px] font-medium">You get{curPlan && cur !== target.slug ? ` compared with ${curPlan.name}` : ""}</p>
@@ -175,7 +208,7 @@ export default function Billing() {
             <InlineError error={change.error} />
             <div className="mt-6 flex flex-wrap gap-2">
               <Button loading={change.isPending} onClick={() => change.mutate(pending)}>
-                Confirm and pay {usd(pending.interval === "year" ? target.price_year : target.price_month)}
+                {stripe && !s ? "Continue to secure checkout" : "Confirm and pay"} {usd(pending.interval === "year" ? target.price_year : target.price_month)}
               </Button>
               {pending.interval === "month" && target.price_month > 0 && (
                 <Button variant="secondary" onClick={() => { setPending({ ...pending, interval: "year" }); setInterval("year"); }}>

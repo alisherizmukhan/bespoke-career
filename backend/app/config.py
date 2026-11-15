@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = "Bespoke <no-reply@bespoke.app>"
 
+    # Payments. With STRIPE_SECRET_KEY set, checkout goes through Stripe (sk_test_ = Stripe test mode, sk_live_ = real
+    # charges). Without it, billing runs in the built-in test mode that records subscriptions but takes no payment.
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+
     # AI provider. "openai" (default) or "anthropic"; without a key, AI features fall back to rule-based logic.
     ai_provider: str = "openai"
     openai_api_key: str = ""
@@ -84,6 +89,14 @@ class Settings(BaseSettings):
     @property
     def s3_enabled(self) -> bool:
         return bool(self.s3_bucket and self.s3_access_key_id)
+
+    @property
+    def stripe_enabled(self) -> bool:
+        return self.stripe_secret_key.startswith(("sk_test_", "sk_live_", "rk_test_", "rk_live_"))
+
+    @property
+    def stripe_live(self) -> bool:
+        return self.stripe_secret_key.startswith(("sk_live_", "rk_live_"))
 
 
 @lru_cache

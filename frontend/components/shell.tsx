@@ -136,9 +136,9 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
       <div className="lg:pl-[248px]">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-lavender-50 px-4 sm:px-6">
           <button className="rounded-md p-2 lg:hidden" onClick={() => setMobile(true)} aria-label="Open menu"><Menu className="h-5 w-5" /></button>
-          <form className="relative hidden max-w-md flex-1 sm:block" onSubmit={(e) => { e.preventDefault(); router.push(`/app/jobs?q=${encodeURIComponent(q)}`); }}>
+          <form className="relative hidden max-w-md flex-1 sm:block" onSubmit={(e) => { e.preventDefault(); router.push(admin ? `/admin/crm?q=${encodeURIComponent(q)}` : `/app/jobs?q=${encodeURIComponent(q)}`); }}>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search jobs" aria-label="Search jobs"
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={admin ? "Search customers" : "Search jobs"} aria-label={admin ? "Search customers" : "Search jobs"}
               className="h-9 w-full rounded-md border border-line bg-white pl-9 pr-3 text-sm placeholder:text-ink-faint focus:border-violet-400 focus:outline-none" />
           </form>
           <div className="ml-auto flex items-center gap-1">

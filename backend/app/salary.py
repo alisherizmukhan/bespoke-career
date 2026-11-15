@@ -91,6 +91,10 @@ def market_research(db: Session, title: str, location: str | None = None, senior
         location_used, seniority_used = None, None
     vals = [(r, _yearly(r)) for r in rows]
     vals = [(r, v) for r, v in vals if v]
+    if len(vals) >= 8:
+        # Drop obvious parsing outliers (e.g. a monthly figure read as yearly): outside 0.35x-3x of the median
+        med = statistics.median(v for _, v in vals)
+        vals = [(r, v) for r, v in vals if med * 0.35 <= v <= med * 3]
     nums = [v for _, v in vals]
     if not nums:
         return {"title": title, "location": location, "sample_size": 0, "currency": "USD",
@@ -118,6 +122,7 @@ def market_research(db: Session, title: str, location: str | None = None, senior
         "sources": sources,
         "observation_window": {"from": dates[0].date().isoformat(), "to": dates[-1].date().isoformat()},
         "limitations": ["Based on public job postings that disclose pay (mostly states with pay-transparency laws).",
+                        "Figures far outside the typical range for this role are left out as likely data errors.",
                         "Posted ranges show what employers advertise, not what people are paid.",
                         "Bonuses, equity and benefits are not included."] + broadened,
         "samples": [{"title": r.title, "company": r.company, "location": r.location, "yearly": round(v), "url": r.url}

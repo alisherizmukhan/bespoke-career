@@ -39,6 +39,10 @@ services:
         value: gpt-5.4-mini
       - key: OPENAI_API_KEY
         sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
       - key: INGEST_ENABLED
         value: "true"
       - key: INGEST_INTERVAL_MINUTES

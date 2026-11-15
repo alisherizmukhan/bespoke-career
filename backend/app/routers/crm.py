@@ -333,7 +333,7 @@ CONTENT_DEFAULTS: dict[str, dict] = {
     "pricing": {"headline": "Plans for every stage of your search",
                 "subhead": "Start free. When you're applying every week, Career Pro on the yearly plan costs less than a dollar a day, and you can cancel the moment you sign an offer."},
     "pricing_faq": {"items": [
-        {"q": "What do I pay today?", "a": "Yearly plans are charged once for 12 months; monthly plans are charged every month. The amount on the button is the full amount, with no setup fees. During the beta, billing runs in test mode and no card is charged."},
+        {"q": "What do I pay today?", "a": "Yearly plans are charged once for 12 months; monthly plans are charged every month. The amount on the button is the full amount, with no setup fees. Card payments are processed by Stripe; Bespoke never sees or stores your card number."},
         {"q": "Can I cancel?", "a": "Yes, from Plan & billing in two clicks. You keep everything you paid for until the end of the current period, then move to Free."},
         {"q": "What happens to my resumes and applications if I downgrade?", "a": "They stay in your account. Free keeps every resume and application you created; only new generations and analyses are limited."},
         {"q": "Can I switch between monthly and yearly?", "a": "Yes, at any time. Moving to yearly starts a new 12-month period at the yearly price."},

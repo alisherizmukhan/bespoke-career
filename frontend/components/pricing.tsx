@@ -242,7 +242,7 @@ export function PayoffCalculator({ plan }: { plan?: PlanData }) {
 }
 
 const FAQ: [string, string][] = [
-  ["What do I pay today?", "Yearly plans are charged once for 12 months; monthly plans are charged every month. The amount you see on the button is the full amount, with no setup fees. During the beta, billing runs in test mode and no card is charged."],
+  ["What do I pay today?", "Yearly plans are charged once for 12 months; monthly plans are charged every month. The amount on the button is the full amount, with no setup fees. Card payments are processed by Stripe; Bespoke never sees or stores your card number."],
   ["Can I cancel?", "Yes, from Plan & billing in two clicks. You keep everything you paid for until the end of the current period, then move to Free."],
   ["What happens to my resumes and applications if I downgrade?", "They stay in your account. Free keeps every resume and application you created; only new generations and analyses are limited."],
   ["Can I switch between monthly and yearly?", "Yes, at any time. Moving to yearly starts a new 12-month period at the yearly price."],

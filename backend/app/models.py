@@ -424,7 +424,9 @@ class Subscription(Timestamps, Base):
     current_period_start: Mapped[datetime] = mapped_column(TS, default=utcnow)
     current_period_end: Mapped[datetime] = mapped_column(TS)
     cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, default=False)
-    provider: Mapped[str] = mapped_column(String(20), default="test")
+    provider: Mapped[str] = mapped_column(String(20), default="test")  # test | stripe | admin_grant
+    provider_subscription_id: Mapped[str | None] = mapped_column(String(80), index=True)
+    provider_customer_id: Mapped[str | None] = mapped_column(String(80))
 
 
 class Payment(Base):
@@ -437,6 +439,7 @@ class Payment(Base):
     status: Mapped[str] = mapped_column(String(20), default="succeeded")
     description: Mapped[str] = mapped_column(String(200))
     is_test: Mapped[bool] = mapped_column(Boolean, default=True)
+    provider_ref: Mapped[str | None] = mapped_column(String(120), index=True)  # Stripe invoice id, for idempotency
     created_at: Mapped[datetime] = mapped_column(TS, default=utcnow)
 
 
