@@ -36,7 +36,7 @@ export default function Crm() {
 
       {o && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <Stat label="Monthly recurring revenue" value={usd0(o.mrr)} sub={`${usd0(o.arr)} a year · ARPU ${usd0(o.arpu)}`} />
             <Stat label="Paying customers" value={o.paying} sub={`${o.conversion}% of ${o.customers} customers`} />
             <Stat label="On yearly billing" value={`${o.yearly_share}%`} sub="of paying customers" />

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { forwardRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiError, api } from "@/lib/api";
+import { RollingNumber } from "./motion";
 
 export const cx = clsx;
 
@@ -204,9 +205,9 @@ export function IconTile({ icon: Icon }: { icon: any; tone?: string }) {
 /** Stat cards are numbers: a label, a figure and what it compares to. The icon prop is accepted but not drawn. */
 export function StatCard({ label, value, sub }: { icon?: any; label: string; value: React.ReactNode; sub?: React.ReactNode; tone?: any }) {
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-5">
       <p className="text-small text-ink-muted">{label}</p>
-      <p className="tabular mt-2 text-h3 font-medium leading-none tracking-[-0.01em] text-ink">{value}</p>
+      <p className="tabular mt-2 text-[24px] font-medium leading-none tracking-[-0.01em] text-ink sm:text-h3">{typeof value === "number" ? <RollingNumber value={value} countUp /> : value}</p>
       {sub && <p className="mt-2 text-small text-ink-faint">{sub}</p>}
     </div>
   );

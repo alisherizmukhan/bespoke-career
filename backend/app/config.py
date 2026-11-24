@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     admin_email: str = "admin@bespoke.app"
     admin_password: str = "ChangeMe-Admin-2026"
     seed_demo_data: bool = True
+    # One-click demo sign-in (demo user / admin) for judges and showcases. Off unless DEMO_LOGIN=true
+    demo_login: bool = False
 
     # Email (SMTP). Without it, verification links go back to the registrant (demo mode)
     # and reset links are written to server logs only.

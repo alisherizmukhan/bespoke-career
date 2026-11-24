@@ -18,7 +18,7 @@ import markdown
 
 DOCS = Path(__file__).resolve().parent
 SECTIONS = ["01-overview", "02-user-guide", "03-architecture", "04-backend", "05-frontend", "06-security",
-            "07-payments", "08-design", "09-deploy", "10-testing", "11-history-and-defense"]
+            "07-payments", "08-design", "09-deploy", "10-testing", "11-history-and-defense", "12-submission"]
 
 CSS = """
 @page { size: A4; margin: 20mm 17mm 20mm 17mm;
@@ -111,7 +111,7 @@ def cover(title: str, subtitle: str) -> str:
     return f"""<div class="cover">
   <div class="mark"><b>B</b>bespoke</div>
   <div><span class="accent"></span><h1>{html.escape(title)}</h1><div class="sub">{html.escape(subtitle)}</div></div>
-  <div class="meta">Сайт: bespoke-career.vercel.app<br>API: bespoke-api-sbc7.onrender.com<br>Версия документа: {today}</div>
+  <div class="meta">Сайт: bespoke-careers.vercel.app<br>API: bespoke-api-production-6091256b.up.railway.app<br>Версия документа: {today}</div>
 </div>"""
 
 
@@ -150,4 +150,4 @@ if __name__ == "__main__":
           "Документация", SECTIONS, with_index=True)
     build(DOCS / "Bespoke-User-Guide.pdf", "Bespoke — руководство пользователя",
           "Пошагово: каждый сценарий пользователя и администратора, все кнопки, оплата и подписка",
-          "Руководство пользователя", ["02-user-guide"], with_index=False)
+          "Руководство пользователя", ["02-user-guide", "12-submission"], with_index=False)

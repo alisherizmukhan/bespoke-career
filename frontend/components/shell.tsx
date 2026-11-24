@@ -135,7 +135,8 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
       )}
       <div className="lg:pl-[248px]">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-lavender-50 px-4 sm:px-6">
-          <button className="rounded-md p-2 lg:hidden" onClick={() => setMobile(true)} aria-label="Open menu"><Menu className="h-5 w-5" /></button>
+          <button className="-ml-2 rounded-md p-2 lg:hidden" onClick={() => setMobile(true)} aria-label="Open menu"><Menu className="h-5 w-5" /></button>
+          <span className="sm:hidden"><Logo /></span>
           <form className="relative hidden max-w-md flex-1 sm:block" onSubmit={(e) => { e.preventDefault(); router.push(admin ? `/admin/crm?q=${encodeURIComponent(q)}` : `/app/jobs?q=${encodeURIComponent(q)}`); }}>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={admin ? "Search customers" : "Search jobs"} aria-label={admin ? "Search customers" : "Search jobs"}
@@ -164,9 +165,40 @@ export function AppShell({ children, admin }: { children: React.ReactNode; admin
             Confirm your email to secure your account. <Link href="/verify-email" className="font-medium underline">Confirm now</Link>
           </div>
         )}
-        <main className="mx-auto max-w-content px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+        <main className={cx("mx-auto max-w-content px-4 py-6 sm:px-6 sm:py-8", !admin && "pb-28 lg:pb-8")}>{children}</main>
       </div>
+      {!admin && <BottomTabs path={path} />}
     </div>
+  );
+}
+
+const TABS = [
+  { href: "/app", label: "Home", icon: LayoutDashboard },
+  { href: "/app/jobs", label: "Jobs", icon: Briefcase },
+  { href: "/app/tracker", label: "Tracker", icon: KanbanSquare },
+  { href: "/app/resumes", label: "Resumes", icon: FileText },
+  { href: "/app/assistant", label: "Assistant", icon: Sparkles },
+];
+
+/** Phone navigation: the five daily destinations within thumb reach. */
+function BottomTabs({ path }: { path: string }) {
+  return (
+    <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <ul className="mx-auto flex max-w-md">
+        {TABS.map((t) => {
+          const on = t.href === "/app" ? path === "/app" : path.startsWith(t.href);
+          return (
+            <li key={t.href} className="flex-1">
+              <Link href={t.href} aria-current={on ? "page" : undefined}
+                className={cx("flex h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors duration-150", on ? "text-accent-ink" : "text-ink-muted")}>
+                <t.icon className={cx("h-5 w-5 transition-transform duration-200", on && "-translate-y-0.5")} />
+                {t.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }
 

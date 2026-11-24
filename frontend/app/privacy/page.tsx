@@ -9,7 +9,7 @@ export default function Page() {
       title="Privacy Policy"
       intro={<>This policy explains what Bespoke collects, why, who processes it on our behalf and the choices you have. We collect only what the product needs, we never sell personal data, and you can export or delete everything from Settings.</>}
       sections={[
-        { id: "who", title: "Who we are", body: <p>Bespoke is a career platform for job seekers in the United States: a job board built from public postings, resume tools, salary estimates, an application tracker and an AI career assistant. In this policy, “Bespoke”, “we” and “us” mean the team operating bespoke-career.vercel.app and its API.</p> },
+        { id: "who", title: "Who we are", body: <p>Bespoke is a career platform for job seekers in the United States: a job board built from public postings, resume tools, salary estimates, an application tracker and an AI career assistant. In this policy, “Bespoke”, “we” and “us” mean the team operating YOUR-FRONTEND.vercel.app and its API.</p> },
         { id: "collect", title: "What we collect", body: <>
           <p><b className="font-medium text-ink">Information you give us</b></p>
           <UL>
@@ -49,7 +49,7 @@ export default function Page() {
         { id: "share", title: "Who we share it with", body: <>
           <p>We share personal data only with service providers that help us run Bespoke, under contracts that limit their use of it to providing their service:</p>
           <UL>
-            <li><b className="font-medium text-ink">Render</b>: hosts the API and the PostgreSQL database (United States).</li>
+            <li><b className="font-medium text-ink">Railway</b>: hosts the API and the PostgreSQL database (United States).</li>
             <li><b className="font-medium text-ink">Vercel</b>: hosts the website you load in your browser.</li>
             <li><b className="font-medium text-ink">OpenAI</b>: processes AI requests as described above.</li>
             <li><b className="font-medium text-ink">Stripe</b>: processes payments and stores card details.</li>

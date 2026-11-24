@@ -39,6 +39,62 @@ export function AuthLayout({ title, subtitle, children }: { title: string; subti
   );
 }
 
+/** One-click demo sign-in: lets judges and visitors try the product without creating an account. */
+export function DemoButtons({ tone = "light" }: { tone?: "light" | "dark" }) {
+  const { signIn } = useAuth();
+  const router = useRouter();
+  const [busy, setBusy] = useState<"user" | "admin" | null>(null);
+  const [err, setErr] = useState<unknown>(null);
+  const go = async (role: "user" | "admin") => {
+    setErr(null);
+    setBusy(role);
+    try {
+      const r = await api("/auth/demo", { body: { role } });
+      signIn(r.access_token, r.user);
+      router.push(role === "admin" ? "/admin" : "/app");
+    } catch (e) {
+      setErr(e);
+      setBusy(null);
+    }
+  };
+  const ghost = tone === "dark" ? "!bg-transparent !text-night-text ring-1 ring-night-soft/40 hover:!bg-white/10" : "";
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Button type="button" variant="secondary" loading={busy === "user"} onClick={() => go("user")} className={ghost}>Try the demo, no sign-up</Button>
+        <Button type="button" variant="secondary" loading={busy === "admin"} onClick={() => go("admin")} className={ghost}>Open the admin demo</Button>
+      </div>
+      <InlineError error={err} />
+    </div>
+  );
+}
+
+/** "Skip" on sign-up: signs in as the shared test user on the free plan. */
+function SkipSignup() {
+  const { signIn } = useAuth();
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<unknown>(null);
+  const skip = async () => {
+    setErr(null);
+    setBusy(true);
+    try {
+      const r = await api("/auth/demo", { body: { role: "starter" } });
+      signIn(r.access_token, r.user);
+      router.push(r.user.onboarding_completed ? "/app" : "/app/onboarding");
+    } catch (e) {
+      setErr(e);
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="space-y-2">
+      <Button type="button" variant="ghost" loading={busy} onClick={skip} className="w-full">Skip, use the test account</Button>
+      <InlineError error={err} />
+    </div>
+  );
+}
+
 const loginSchema = z.object({ email: z.string().email("Enter a valid email address."), password: z.string().min(1, "Enter your password.") });
 
 export function LoginForm() {
@@ -67,6 +123,10 @@ export function LoginForm() {
       <InlineError error={err} />
       <Button type="submit" loading={isSubmitting} className="w-full" size="lg">Log in</Button>
       <p className="text-center text-sm text-ink-muted">New to Bespoke? <Link href="/register" className="link font-medium">Create an account</Link></p>
+      <div className="border-t border-line pt-4">
+        <p className="mb-3 text-center text-sm text-ink-muted">Just looking? Open a ready account in one click</p>
+        <DemoButtons />
+      </div>
     </form>
   );
 }
@@ -110,6 +170,7 @@ export function RegisterForm() {
       {errors.accept_terms && <p className="text-xs font-medium text-danger">{errors.accept_terms.message}</p>}
       <InlineError error={err} />
       <Button type="submit" loading={isSubmitting} className="w-full" size="lg">Create free account</Button>
+      <SkipSignup />
       <p className="text-center text-sm text-ink-muted">Already have an account? <Link href="/login" className="link font-medium">Log in</Link></p>
     </form>
   );

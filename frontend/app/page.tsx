@@ -5,6 +5,8 @@ import {
   ArrowRight, Bell, Check, FileText, GraduationCap, KanbanSquare, MessageSquare, Target, Wallet, Wand2,
 } from "@/components/icons";
 import Link from "next/link";
+import { DemoButtons } from "@/components/auth-forms";
+import { Reveal, RollingNumber, TypeCycle, TypeOnce } from "@/components/motion";
 import { PricingGrid } from "@/components/pricing";
 import { PublicShell } from "@/components/public";
 import { Button, RangeMarker, ScoreRing, cx } from "@/components/ui";
@@ -34,8 +36,8 @@ function PayHistogram({ h }: { h?: Hist }) {
     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] overflow-hidden" aria-hidden>
       <div className="mx-auto flex h-full max-w-[1400px] items-end gap-[3px] px-4 sm:gap-1.5 sm:px-6">
         {bins.map((v, i) => (
-          <div key={i} className={cx("flex-1 rounded-t-[3px]", i === medianBin ? "bg-night-500" : "bg-night-700")}
-            style={{ height: `${12 + (v / max) * 88}%` }} />
+          <div key={i} className={cx("bar-grow flex-1 rounded-t-[3px]", i === medianBin ? "bg-night-500" : "bg-night-700")}
+            style={{ height: `${12 + (v / max) * 88}%`, animationDelay: `${300 + i * 18}ms` }} />
         ))}
       </div>
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night-900 to-transparent" />
@@ -72,8 +74,8 @@ function SalaryCard({ h }: { h?: Hist }) {
   return (
     <div className="rounded-xl border border-line bg-white p-6 text-ink shadow-float">
       <p className="text-small text-ink-faint">Your estimated range</p>
-      <p className="mt-1 text-body font-medium">Data Analyst · Chicago, IL</p>
-      <p className="tabular mt-4 font-display font-semibold text-display-sm leading-none">{money(low, { compact: true })} – {money(high, { compact: true })}</p>
+      <p className="mt-1 min-h-[1.5em] text-body font-medium"><TypeOnce text="Data Analyst · Chicago, IL" delay={900} /></p>
+      <p className="tabular mt-4 font-display font-semibold text-display-sm leading-none"><RollingNumber value={low} countUp duration={1100} format={(n) => money(Math.round(n / 1000) * 1000, { compact: true })} /> – <RollingNumber value={high} countUp duration={1300} format={(n) => money(Math.round(n / 1000) * 1000, { compact: true })} /></p>
       <p className="mt-2 text-small text-ink-muted">Base pay per year, 214 postings with disclosed salary</p>
       <div className="relative mt-10">
         <div className="relative h-2 rounded-full bg-lavender-100">
@@ -124,10 +126,12 @@ export default function Landing() {
         <PayHistogram h={hist.data} />
         <div className="relative mx-auto max-w-content px-4 pb-0 pt-32 text-center sm:px-6 sm:pt-36">
           <p className="font-mono text-xs text-night-mute">
-            {f ? `${f.total.toLocaleString("en-US")} open US jobs · ${f.with_salary.toLocaleString("en-US")} with posted pay · updated hourly` : "Open US jobs, updated hourly"}
+            {f ? <><RollingNumber value={f.total} countUp duration={1200} /> open US jobs · <RollingNumber value={f.with_salary} countUp duration={1200} /> with posted pay · updated hourly</> : "Open US jobs, updated hourly"}
           </p>
           <h1 className="mx-auto mt-6 max-w-3xl font-display font-semibold text-display-sm leading-[1.04] tracking-[-0.035em] sm:text-display-lg">
-            {hero?.headline || "Know what your role pays before you apply"}
+            {(hero?.headline || "Know what your role pays before you apply").split(" ").map((w: string, i: number) => (
+              <span key={i} className="rise-word" style={{ animationDelay: `${120 + i * 70}ms` }}>{w}&nbsp;</span>
+            ))}
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-[1.6] text-night-soft">
             {hero?.subhead || "Bespoke reads live US job postings so you can see your market pay, tailor your resume to the posting and keep every application moving."}
@@ -138,6 +142,7 @@ export default function Landing() {
               Browse jobs <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+          <div className="mt-6"><DemoButtons tone="dark" /></div>
           <p className="mt-16 font-mono text-xs text-night-mute">
             {hist.data?.median ? `Bars: posted base pay across ${hist.data.count.toLocaleString("en-US")} listings, $30k to $400k · median ${money(hist.data.median, { compact: true })}` : " "}
           </p>
@@ -154,13 +159,15 @@ export default function Landing() {
       <section id="features" className="bg-lavender-50 pt-36">
         <div className="mx-auto max-w-content px-4 pb-24 sm:px-6">
           <div className="max-w-2xl">
-            <h2 className="h-display text-h1 leading-[1.08] sm:text-display">One search, from posting to offer</h2>
+            <Reveal><h2 className="h-display text-h1 leading-[1.08] sm:text-display">One search, from posting to offer</h2></Reveal>
             <p className="mt-4 text-lg leading-7 text-ink-muted">Every tool reads the same profile, so your salary estimate, resume and applications stay in step.</p>
+            <p className="mt-3 font-mono text-xs text-ink-faint sm:hidden">Swipe to see all eight →</p>
           </div>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mt-12 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
             {FEATURES.map((x, i) => (
-              <Link key={x.title} href={x.href}
-                className={cx("group flex flex-col rounded-lg border p-6 transition-colors duration-150",
+              <Reveal key={x.title} index={i} className="w-[78%] max-w-[300px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+              <Link href={x.href}
+                className={cx("group flex h-full flex-col rounded-lg border p-6 transition-[colors,transform] duration-200 hover:-translate-y-0.5",
                   i === 0 ? "border-night-900 bg-night-900 text-night-text" : "border-line bg-white hover:border-violet-300")}>
                 <x.icon className={cx("h-5 w-5", i === 0 ? "text-night-soft" : "text-ink-faint")} />
                 <p className="mt-6 text-body font-medium leading-snug">{x.title}</p>
@@ -169,6 +176,7 @@ export default function Landing() {
                   Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                 </span>
               </Link>
+              </Reveal>
             ))}
           </div>
           <p className="mt-10 font-mono text-xs leading-6 text-ink-faint">
@@ -181,20 +189,20 @@ export default function Landing() {
       <section id="salary" className="border-t border-line bg-white">
         <div className="mx-auto grid max-w-content gap-12 px-4 py-24 sm:px-6 lg:grid-cols-2 lg:items-center">
           <div>
-            <h2 className="h-display text-4xl leading-[1.1] sm:text-display-sm">Salary numbers you can check</h2>
+            <Reveal><h2 className="h-display text-4xl leading-[1.1] sm:text-display-sm">Salary numbers you can check</h2></Reveal>
             <p className="mt-4 text-lg leading-7 text-ink-muted">
               Estimates come from postings that disclose pay, mostly from states with pay-transparency laws. You see the sample size, the sources and the dates behind every range, and the AI explains numbers without inventing them.
             </p>
           </div>
           <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line">
             {[
-              ["Listings with pay", f ? f.with_salary.toLocaleString("en-US") : "—"],
-              ["Hiring companies", f ? f.companies.toLocaleString("en-US") : "—"],
+              ["Listings with pay", f ? <RollingNumber value={f.with_salary} countUp duration={1200} /> : "—"],
+              ["Hiring companies", f ? <RollingNumber value={f.companies} countUp duration={1200} /> : "—"],
               ["Median posted base", hist.data?.median ? money(hist.data.median, { compact: true }) : "—"],
               ["Middle half", hist.data?.p25 ? `${money(hist.data.p25, { compact: true })}–${money(hist.data.p75, { compact: true })}` : "—"],
             ].map(([k, v]) => (
-              <div key={k} className="bg-white p-6">
-                <dt className="text-small text-ink-muted">{k}</dt>
+              <div key={k as string} className="bg-white p-5 sm:p-6">
+                <dt className="text-small text-ink-muted">{k as string}</dt>
                 <dd className="tabular mt-2 text-h3 font-medium leading-none">{v}</dd>
               </div>
             ))}
@@ -206,7 +214,7 @@ export default function Landing() {
       <section id="students" className="border-t border-line bg-lavender-50">
         <div className="mx-auto grid max-w-content gap-10 px-4 py-24 sm:px-6 md:grid-cols-2 md:items-center">
           <div>
-            <h2 className="h-display text-4xl leading-[1.1] sm:text-display-sm">For students and first jobs</h2>
+            <Reveal><h2 className="h-display text-4xl leading-[1.1] sm:text-display-sm">For students and first jobs</h2></Reveal>
             <p className="mt-4 text-lg leading-7 text-ink-muted">Internship resumes without work history, academic CVs and graduate applications. Family plans keep every profile private by default.</p>
           </div>
           <ul className="divide-y divide-line rounded-lg border border-line bg-white">
@@ -220,10 +228,12 @@ export default function Landing() {
       {/* PRICING */}
       <section className="border-t border-line bg-white">
         <div className="mx-auto max-w-content px-4 py-24 sm:px-6">
-          <h2 className="h-display text-4xl sm:text-display-sm">Pricing</h2>
-          <p className="mt-2 text-ink-muted">Start free. Upgrade when your search picks up.</p>
+          <Reveal className="text-center">
+            <h2 className="h-display text-4xl sm:text-display-sm">Pricing</h2>
+            <p className="mt-2 text-ink-muted">Start free. Upgrade when your search picks up.</p>
+          </Reveal>
           <div className="mt-8"><PricingGrid plans={plans.data?.plans || []} /></div>
-          <p className="mt-6 text-sm"><Link href="/pricing#compare" className="link font-medium">Compare every limit and see what a plan pays back →</Link></p>
+          <p className="mt-6 text-center text-sm"><Link href="/pricing#compare" className="link font-medium">Compare every limit and see what a plan pays back →</Link></p>
         </div>
       </section>
 
@@ -231,8 +241,8 @@ export default function Landing() {
       <section className="bg-night-900 text-night-text">
         <div className="mx-auto flex max-w-content flex-col items-start gap-6 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="font-display font-semibold text-4xl leading-tight sm:text-display-sm">See your range in two minutes</p>
-            <p className="mt-2 text-night-soft">Create a profile, add your title and city, and get your first estimate.</p>
+            <p className="font-display font-semibold text-4xl leading-tight sm:text-display-sm">See what a <TypeCycle className="text-[#a990f5]" words={["Data Analyst", "Registered Nurse", "Software Engineer", "Product Manager", "Teacher"]} /><br className="sm:hidden" /> earns</p>
+            <p className="mt-2 text-night-soft">Create a profile, add your title and city, and get your first estimate in two minutes.</p>
           </div>
           <Button href="/register" size="lg" className="!bg-night-text !text-night-900 hover:!bg-white">Create a free account</Button>
         </div>

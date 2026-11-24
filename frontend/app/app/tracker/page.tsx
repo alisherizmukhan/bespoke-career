@@ -158,7 +158,7 @@ export default function Tracker() {
       <PageHeader title="Job Tracker" subtitle="Every application, interview and follow-up in one place."
         actions={<><Tabs value={view} onChange={setView} items={[{ value: "board", label: "Board", icon: KanbanSquare }, { value: "table", label: "Table", icon: Table2 }, { value: "list", label: "List", icon: LayoutList }]} /><Button onClick={() => setCreating(true)}><Plus className="h-4 w-4" />Add application</Button></>} />
       {stats.data && (
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <StatCard icon={KanbanSquare} label="Active" value={stats.data.active} sub={`${stats.data.applied_this_week} applied this week`} />
           <StatCard icon={Bell} label="Response rate" value={`${stats.data.response_rate}%`} sub="Of submitted applications" />
           <StatCard icon={CalendarPlus} label="Interview rate" value={`${stats.data.interview_rate}%`} sub={`${stats.data.upcoming_interviews} upcoming`} tone="warning" />

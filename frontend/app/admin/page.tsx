@@ -15,7 +15,7 @@ export default function AdminMetrics() {
   return (
     <div>
       <PageHeader title="Metrics" subtitle={`Product and subscription metrics · billing in ${m.billing_mode} mode`} />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard icon={Users} label="Users" value={m.users} sub={`${m.activated} activated`} />
         <StatCard icon={UserCheck} label="DAU / MAU" value={`${m.dau} / ${m.mau}`} />
         <StatCard icon={CreditCard} label="Paying accounts" value={m.paying} sub={`${m.conversion}% conversion`} tone="success" />

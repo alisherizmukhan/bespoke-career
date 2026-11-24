@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download } from "./icons";
 import { Button, cx } from "./ui";
 import { API_URL, ApiError, getToken } from "@/lib/api";
+import { RollingNumber } from "./motion";
 
 /** Download an admin export with the session token and save it under the server's filename. */
 export async function downloadExport(dataset: string, format: "csv" | "xlsx") {
@@ -39,9 +40,9 @@ export function ExportButtons({ dataset, size = "sm" }: { dataset: string; size?
 
 export function Stat({ label, value, sub, className }: { label: string; value: React.ReactNode; sub?: React.ReactNode; className?: string }) {
   return (
-    <div className={cx("rounded-lg border border-line bg-white p-5", className)}>
+    <div className={cx("rounded-lg border border-line bg-white p-4 sm:p-5", className)}>
       <p className="text-small text-ink-muted">{label}</p>
-      <p className="tabular mt-2 text-h3 font-semibold leading-none tracking-[-0.02em]">{value}</p>
+      <p className="tabular mt-2 text-[24px] font-semibold leading-none tracking-[-0.02em] sm:text-h3">{typeof value === "number" ? <RollingNumber value={value} countUp /> : value}</p>
       {sub && <p className="mt-2 text-small text-ink-muted">{sub}</p>}
     </div>
   );

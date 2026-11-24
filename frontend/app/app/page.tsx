@@ -14,7 +14,7 @@ export default function Dashboard() {
   const qc = useQueryClient();
   const q = useQuery({ queryKey: ["dashboard"], queryFn: () => api("/dashboard") });
   const done = useMutation({ mutationFn: (id: string) => api(`/reminders/${id}?done=true`, { method: "PATCH" }), onSuccess: () => qc.invalidateQueries({ queryKey: ["dashboard"] }) });
-  if (q.isLoading) return <div className="space-y-5"><Skeleton className="h-24" /><div className="grid gap-4 md:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28" />)}</div><Skeleton className="h-64" /></div>;
+  if (q.isLoading) return <div className="space-y-5"><Skeleton className="h-24" /><div className="grid grid-cols-2 gap-3 md:grid-cols-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-28" />)}</div><Skeleton className="h-64" /></div>;
   if (q.isError) return <ErrorState error={q.error} retry={() => q.refetch()} />;
   const d = q.data;
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
@@ -34,7 +34,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard icon={KanbanSquare} label="Active applications" value={d.applications.active} sub={`${d.applications.total} tracked in total`} />
         <StatCard icon={CalendarClock} label="Upcoming interviews" value={d.upcoming_interviews.length} sub={d.upcoming_interviews[0] ? date(d.upcoming_interviews[0].scheduled_at, true) : "None scheduled"} tone="warning" />
         <StatCard icon={FileText} label="Resume score" value={d.resume.last_score ?? "—"} sub={d.resume.count ? `${d.resume.count} resume${d.resume.count > 1 ? "s" : ""}` : "Upload to get a score"} />

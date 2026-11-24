@@ -119,7 +119,7 @@ export default function Billing() {
             You keep {curPlan.name} until <b className="font-medium text-ink">{date(s.current_period_end)}</b>. After that your account moves to Free. Your resumes, applications and notes stay.
           </p>
           {free && (
-            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
               {LIMIT_ROWS.filter((r) => (curPlan.limits?.[r.key] ?? 0) !== (free.limits?.[r.key] ?? 0)).slice(0, 4).map((r) => (
                 <div key={r.key} className="rounded-md bg-lavender-50 px-3 py-2 text-small">
                   <p className="text-ink-muted">{r.label}</p>

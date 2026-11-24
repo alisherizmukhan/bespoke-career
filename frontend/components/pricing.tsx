@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, X } from "./icons";
+import { RollingNumber } from "./motion";
 import { Button, cx } from "./ui";
 
 export type Interval = "month" | "year";
@@ -15,6 +16,9 @@ export type PlanData = {
   limits?: Record<string, number>;
   features: string[];
 };
+
+const cents = (n: number) => "$" + n.toFixed(2);
+const wholeUsd = (n: number) => usd(Math.round(n));
 
 export const usd = (n: number) => `$${Number.isInteger(n) ? n.toLocaleString("en-US") : n.toFixed(2)}`;
 
@@ -57,22 +61,33 @@ export function limitText(v: number | undefined, flag?: boolean) {
 
 /** Monthly / Yearly switch; the yearly tab carries the saving. */
 export function IntervalToggle({ value, onChange, savePct }: { value: Interval; onChange: (v: Interval) => void; savePct: number }) {
+  // A dark thumb slides under the chosen option.
+  const refs = useRef<Record<Interval, HTMLButtonElement | null>>({ month: null, year: null });
+  const [thumb, setThumb] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const measure = () => { const b = refs.current[value]; if (b) setThumb({ left: b.offsetLeft, width: b.offsetWidth }); };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [value, savePct]);
   const opt = (v: Interval, label: React.ReactNode) => (
-    <button type="button" role="tab" aria-selected={value === v} onClick={() => onChange(v)}
-      className={cx("inline-flex h-9 items-center gap-2 rounded-sm px-4 text-sm font-medium transition-colors duration-150",
-        value === v ? "bg-ink text-white" : "text-ink-muted hover:text-ink")}>
+    <button ref={(el) => { refs.current[v] = el; }} type="button" role="tab" aria-selected={value === v} onClick={() => onChange(v)}
+      className={cx("relative z-10 inline-flex h-9 items-center gap-2 rounded-sm px-4 text-sm font-medium transition-colors duration-200",
+        value === v ? (thumb ? "text-white" : "bg-ink text-white") : "text-ink-muted hover:text-ink")}>
       {label}
     </button>
   );
   return (
-    <div role="tablist" aria-label="Billing period" className="inline-flex gap-1 rounded-md border border-line bg-white p-1">
+    <div role="tablist" aria-label="Billing period" className="relative inline-flex gap-1 rounded-md border border-line bg-white p-1">
+      {thumb && <span aria-hidden className="absolute bottom-1 top-1 rounded-sm bg-ink transition-all duration-300 ease-out" style={{ left: thumb.left, width: thumb.width }} />}
       {opt("month", "Monthly")}
       {opt("year", <>Yearly{savePct > 0 && <span className={cx("rounded-sm px-1.5 py-0.5 text-xs", value === "year" ? "bg-accent text-white" : "bg-accent-soft text-accent-ink")}>Save {savePct}%</span>}</>)}
     </div>
   );
 }
 
-/** Price block: monthly equivalent, struck monthly price, what is charged and when, and the saving. */
+/** Price block: monthly equivalent, struck monthly price, what is charged and when, and the saving.
+ *  One layout for both intervals, so the numbers roll from one value to the other when the toggle flips. */
 export function PlanPrice({ plan, interval, onPickYearly }: { plan: PlanData; interval: Interval; onPickYearly?: () => void }) {
   if (!plan.price_month) {
     return (
@@ -83,29 +98,22 @@ export function PlanPrice({ plan, interval, onPickYearly }: { plan: PlanData; in
     );
   }
   const { perMonth, saved, freeMonths } = annualMath(plan);
-  if (interval === "year") {
-    return (
-      <div className="mt-5">
-        <p className="flex items-baseline gap-2">
-          <span className="tabular text-h1 font-semibold leading-none tracking-[-0.02em]">{usd(perMonth)}</span>
-          <span className="text-ink-muted">/ mo</span>
-          <s className="tabular text-body text-ink-faint">{usd(plan.price_month)}</s>
-        </p>
-        <p className="mt-2 text-small text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_year)}</span> once a year</p>
-        <p className="mt-1 text-small font-medium text-success">Save {usd(saved)} a year{freeMonths >= 2 ? `, like ${freeMonths} months free` : ""}</p>
-      </div>
-    );
-  }
+  const yearly = interval === "year";
   return (
     <div className="mt-5">
       <p className="flex items-baseline gap-2">
-        <span className="tabular text-h1 font-semibold leading-none tracking-[-0.02em]">{usd(plan.price_month)}</span>
+        <RollingNumber value={yearly ? perMonth : plan.price_month} format={wholeUsd} className="text-h1 font-semibold leading-none tracking-[-0.02em]" />
         <span className="text-ink-muted">/ mo</span>
+        <s className={cx("tabular text-body text-ink-faint transition-opacity duration-300", yearly ? "opacity-100" : "opacity-0")} aria-hidden={!yearly}>{usd(plan.price_month)}</s>
       </p>
-      <p className="mt-2 text-small text-ink-muted">You pay <span className="tabular font-medium text-ink">{usd(plan.price_month)}</span> every month</p>
-      {onPickYearly
-        ? <button type="button" onClick={onPickYearly} className="link mt-1 text-left text-small font-medium">Pay yearly: {usd(perMonth)}/mo, save {usd(saved)}</button>
-        : <p className="mt-1 text-small text-ink-muted">Or {usd(perMonth)}/mo billed yearly</p>}
+      <p className="mt-2 text-small text-ink-muted">
+        You pay <RollingNumber value={yearly ? plan.price_year : plan.price_month} format={wholeUsd} glitch={false} className="font-medium text-ink" /> {yearly ? "once a year" : "every month"}
+      </p>
+      {yearly
+        ? <p className="mt-1 text-small font-medium text-success">Save {usd(saved)} a year{freeMonths >= 2 ? `, like ${freeMonths} months free` : ""}</p>
+        : onPickYearly
+          ? <button type="button" onClick={onPickYearly} className="link mt-1 text-left text-small font-medium">Pay yearly: {usd(perMonth)}/mo, save {usd(saved)}</button>
+          : <p className="mt-1 text-small text-ink-muted">Or {usd(perMonth)}/mo billed yearly</p>}
     </div>
   );
 }
@@ -115,15 +123,15 @@ export function PlanCard({ plan, interval, onPickYearly, featured }: { plan: Pla
   const daily = monthlyCost(plan, interval) / 30.4;
   const unit = perResume(plan, interval);
   return (
-    <div className={cx("relative flex flex-col rounded-lg border bg-white p-6", featured ? "border-ink shadow-pop" : "border-line")}>
+    <div className={cx("relative flex h-full flex-col rounded-lg border bg-white p-5 sm:p-6", featured ? "border-ink shadow-pop" : "border-line")}>
       {featured && <p className="absolute -top-3 left-6 rounded-sm bg-ink px-2 py-0.5 font-mono text-xs text-white">Recommended</p>}
       <p className="text-base font-semibold">{plan.name}</p>
       {plan.tagline && <p className="mt-1 min-h-[40px] text-small text-ink-muted">{plan.tagline}</p>}
       <PlanPrice plan={plan} interval={interval} onPickYearly={onPickYearly} />
       {plan.price_month > 0 && (
         <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line text-xs">
-          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-sm font-semibold text-ink">{usd(Math.round(daily * 100) / 100)}</p><p className="text-ink-muted">a day</p></div>
-          <div className="bg-lavender-50 px-3 py-2"><p className="tabular text-sm font-semibold text-ink">{usd(Math.round(unit * 100) / 100)}</p><p className="text-ink-muted">per tailored resume</p></div>
+          <div className="bg-lavender-50 px-3 py-2"><p className="text-sm font-semibold text-ink"><RollingNumber value={Math.round(daily * 100) / 100} format={cents} glitch={false} /></p><p className="text-ink-muted">a day</p></div>
+          <div className="bg-lavender-50 px-3 py-2"><p className="text-sm font-semibold text-ink"><RollingNumber value={Math.round(unit * 100) / 100} format={cents} glitch={false} /></p><p className="text-ink-muted">per tailored resume</p></div>
         </div>
       )}
       <p className="mt-6 text-xs font-medium text-ink">What you get</p>
@@ -139,14 +147,47 @@ export function PlanCard({ plan, interval, onPickYearly, featured }: { plan: Pla
   );
 }
 
-/** Toggle + plan grid + reassurance line. Starts on yearly. */
-export function PricingGrid({ plans, align = "start" }: { plans: PlanData[]; align?: "start" | "center" }) {
+/** Toggle + plan grid + reassurance line. Starts on yearly. On phones the plans become a swipe row that opens on the recommended plan. */
+export function PricingGrid({ plans, align = "center" }: { plans: PlanData[]; align?: "start" | "center" }) {
   const [interval, setInterval] = useState<Interval>("year");
   const pct = maxSavingPct(plans);
   const pro = plans.find((p) => p.slug === "pro");
+  const row = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const centerOn = (i: number, smooth: boolean) => {
+    const el = row.current;
+    const card = el?.children[i] as HTMLElement | undefined;
+    if (!el || !card) return;
+    const left = card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2;
+    if (smooth) el.scrollTo({ left, behavior: "smooth" });
+    else el.scrollLeft = left;
+  };
+  // Phones: open the swipe row on the recommended plan, without moving the page itself.
+  useEffect(() => {
+    const el = row.current;
+    if (!el || !plans.length || el.scrollWidth <= el.clientWidth) return;
+    const i = Math.max(0, plans.findIndex((p) => p.slug === "pro"));
+    centerOn(i, false);
+    setActive(i);
+  }, [plans]);
+  const onScroll = () => {
+    const el = row.current;
+    if (!el) return;
+    const mid = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let dist = Infinity;
+    Array.from(el.children).forEach((c, i) => {
+      const h = c as HTMLElement;
+      const d = Math.abs(h.offsetLeft + h.offsetWidth / 2 - mid);
+      if (d < dist) { dist = d; best = i; }
+    });
+    setActive(best);
+  };
+
   return (
     <div>
-      <div className={cx("flex flex-col gap-3 sm:flex-row sm:items-center", align === "center" ? "items-center sm:justify-center" : "items-start")}>
+      <div className={cx("flex flex-col gap-3", align === "center" ? "items-center text-center" : "items-start sm:flex-row sm:items-center")}>
         <IntervalToggle value={interval} onChange={setInterval} savePct={pct} />
         {pro && pct > 0 && (
           <p className="text-small text-ink-muted">
@@ -156,9 +197,24 @@ export function PricingGrid({ plans, align = "start" }: { plans: PlanData[]; ali
           </p>
         )}
       </div>
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {plans.map((p) => <PlanCard key={p.slug} plan={p} interval={interval} featured={p.slug === "pro"} onPickYearly={() => setInterval("year")} />)}
+      <div ref={row} onScroll={onScroll}
+        className="no-scrollbar -mx-4 mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 pt-4 md:mx-0 md:mt-8 md:grid md:snap-none md:grid-cols-2 md:gap-4 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
+        {plans.map((p) => (
+          <div key={p.slug} className="w-[84%] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none">
+            <PlanCard plan={p} interval={interval} featured={p.slug === "pro"} onPickYearly={() => setInterval("year")} />
+          </div>
+        ))}
       </div>
+      {plans.length > 1 && (
+        <div className="mt-3 flex items-center justify-center gap-2 md:hidden">
+          {plans.map((p, i) => (
+            <button key={p.slug} type="button" onClick={() => centerOn(i, true)} aria-label={`Show ${p.name}`}
+              className="grid h-6 w-6 place-items-center">
+              <span className={cx("block h-1.5 rounded-full transition-all duration-300", i === active ? "w-5 bg-ink" : "w-1.5 bg-ink-faint/40")} />
+            </button>
+          ))}
+        </div>
+      )}
       <ul className={cx("mt-6 flex flex-wrap gap-x-6 gap-y-2 text-small text-ink-muted", align === "center" && "justify-center")}>
         {["Free plan with no card", "Switch or cancel from Plan & billing at any time", "Unused paid time is never cut short", "Your resumes and tracker stay yours on every plan"].map((t) => (
           <li key={t} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-success" />{t}</li>

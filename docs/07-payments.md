@@ -33,10 +33,10 @@
 
 ### Как включить настоящую оплату
 1. Зарегистрироваться на stripe.com (бесплатно) и в режиме Test взять ключ `sk_test_…`.
-2. В Render → `bespoke-api` → Environment добавить `STRIPE_SECRET_KEY`.
-3. Зарегистрировать вебхук. Команда напечатает `STRIPE_WEBHOOK_SECRET=whsec_…`, его нужно добавить в Render:
+2. В Railway → `bespoke-api` → Variables добавить `STRIPE_SECRET_KEY`.
+3. Зарегистрировать вебхук. Команда напечатает `STRIPE_WEBHOOK_SECRET=whsec_…`, его нужно добавить в Railway:
    ```
-   STRIPE_SECRET_KEY=sk_test_... python -m app.stripe_setup https://bespoke-api-sbc7.onrender.com/api/v1/billing/webhooks/stripe
+   STRIPE_SECRET_KEY=sk_test_... python -m app.stripe_setup https://bespoke-api-production-6091256b.up.railway.app/api/v1/billing/webhooks/stripe
    ```
 4. Для реальных денег сделать то же самое с ключом `sk_live_…` после активации аккаунта Stripe. Плашка тестового режима исчезнет сама.
 

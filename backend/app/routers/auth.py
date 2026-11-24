@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field, field_validator
@@ -120,6 +121,33 @@ def login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
         raise HTTPException(403, "This account is suspended. Contact support.")
     u.last_login_at = utcnow()
     audit(db, u.id, "auth.login", "user", u.id, ip=ip)
+    db.commit()
+    return {"access_token": create_access_token(u), "user": user_out(u, db)}
+
+
+DEMO_USER_EMAIL = "alex@demo.bespoke.app"
+STARTER_USER_EMAIL = "jordan@demo.bespoke.app"  # the same seeded test user on the free plan
+
+
+class DemoIn(BaseModel):
+    role: Literal["user", "admin", "starter"] = "user"
+
+
+@router.post("/demo")
+def demo_login(body: DemoIn, request: Request, db: Session = Depends(get_db)):
+    """One-click sign-in to the seeded demo user or the admin, so the product can be tried without sign-up.
+    Enabled only when DEMO_LOGIN=true; real registration and login keep working alongside it."""
+    s = get_settings()
+    if not s.demo_login:
+        raise HTTPException(404, "Demo sign-in is not enabled.")
+    ip = client_ip(request)
+    rate_limit(f"demo:{ip}", 20, 60)
+    email = {"admin": s.admin_email.lower(), "starter": STARTER_USER_EMAIL}.get(body.role, DEMO_USER_EMAIL)
+    u = db.scalar(select(User).where(User.email == email))
+    if not u or u.account_status != "active":
+        raise HTTPException(404, "The demo account is not available.")
+    u.last_login_at = utcnow()
+    audit(db, u.id, "auth.demo_login", "user", u.id, ip=ip)
     db.commit()
     return {"access_token": create_access_token(u), "user": user_out(u, db)}
 

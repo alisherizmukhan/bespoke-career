@@ -85,13 +85,18 @@ PDF/DOCX export, file validation, unsupported-claim detection, entitlement limit
 transitions and isolation, cross-user resume/file access with signed URLs, salary parsing/statistics, US location
 filtering, data export and account deletion.
 
-## Deployment (Railway)
+## Deployment
 
-Three services in one project: **Postgres**, **backend** (`/backend`, Dockerfile) and **frontend** (`/frontend`,
-Dockerfile), plus an S3-compatible **bucket** for private uploads. Backend start command runs migrations and the
-idempotent seed. Required backend variables: `DATABASE_URL`, `JWT_SECRET`, `ADMIN_PASSWORD`, `FRONTEND_URL`,
-`PUBLIC_API_URL`, `CORS_ORIGINS`, `OPENAI_API_KEY`, `S3_*`. Frontend: `NEXT_PUBLIC_API_URL` (build time).
-Secrets live only in Railway variables — never in the repository.
+Live: **https://bespoke-careers.vercel.app** (site) · **https://bespoke-api-production-6091256b.up.railway.app** (API,
+`/health`).
+
+- **Railway** project `bespoke`: **Postgres** (PostgreSQL 18) and **bespoke-api** (GitHub `tokkisun/bespoke`, root
+  directory `/backend`, `backend/Dockerfile`, health check `/health`). Every push to `main` redeploys the API; the
+  container runs migrations and the idempotent seed before starting uvicorn.
+- **Vercel** project `bespoke-careers`: root directory `frontend`, Next.js, `NEXT_PUBLIC_API_URL` = the API address.
+- Backend variables: `DATABASE_URL` (`${{Postgres.DATABASE_URL}}`), `JWT_SECRET`, `ADMIN_PASSWORD`, `FRONTEND_URL`,
+  `PUBLIC_API_URL`, `CORS_ORIGINS`, optional `OPENAI_API_KEY` and `STRIPE_*`. Secrets live only in Railway
+  variables, never in the repository. Full guide: `docs/09-deploy.md`.
 
 ## Security & privacy notes
 

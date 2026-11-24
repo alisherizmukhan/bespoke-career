@@ -22,3 +22,40 @@ body { font-family: "Instrument Sans Variable", "Instrument Sans", system-ui, sa
   .skeleton { @apply animate-pulse rounded-md bg-lavender-100; }
   .prose-plain p { @apply mb-3; }
 }
+
+/* ---------- Motion ---------- */
+/* Typing caret */
+.caret { display: inline-block; width: 0.08em; height: 1em; margin-left: 0.06em; vertical-align: -0.12em; background: currentColor; animation: caret-blink 1s steps(1) infinite; }
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+/* Short digital glitch when a number changes: colour split + jitter, about 0.4 s */
+.glitch { position: relative; animation: glitch-jitter 420ms steps(2, end) 1; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.glitch::before { color: theme("colors.accent.DEFAULT"); transform: translate(-2px, 0); clip-path: inset(0 0 55% 0); opacity: 0.75; animation: glitch-a 420ms steps(3, end) 1 both; }
+.glitch::after { color: #14b8a6; transform: translate(2px, 0); clip-path: inset(55% 0 0 0); opacity: 0.75; animation: glitch-b 420ms steps(3, end) 1 both; }
+@keyframes glitch-jitter { 0% { transform: translate(0); } 25% { transform: translate(-1px, 1px) skewX(-4deg); } 50% { transform: translate(1px, -1px); } 75% { transform: translate(-1px, 0) skewX(3deg); } 100% { transform: translate(0); } }
+@keyframes glitch-a { 0% { clip-path: inset(0 0 70% 0); } 33% { clip-path: inset(20% 0 45% 0); } 66% { clip-path: inset(60% 0 10% 0); } 100% { clip-path: inset(0 0 100% 0); opacity: 0; } }
+@keyframes glitch-b { 0% { clip-path: inset(65% 0 0 0); } 33% { clip-path: inset(30% 0 40% 0); } 66% { clip-path: inset(5% 0 75% 0); } 100% { clip-path: inset(100% 0 0 0); opacity: 0; } }
+
+/* Scroll reveal: lift and fade in once */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 600ms cubic-bezier(.2,.7,.2,1), transform 600ms cubic-bezier(.2,.7,.2,1); }
+.reveal-in { opacity: 1; transform: none; }
+@media print { .reveal { opacity: 1; transform: none; } }
+
+/* Hero headline: words rise in one after another */
+.rise-word { display: inline-block; animation: rise-word 700ms cubic-bezier(.2,.7,.2,1) both; }
+@keyframes rise-word { from { opacity: 0; transform: translateY(0.35em); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* Hero pay bars grow from the floor */
+.bar-grow { transform-origin: bottom; animation: bar-grow 900ms cubic-bezier(.2,.7,.2,1) both; }
+@keyframes bar-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* Horizontal swipe rows on phones */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+  .glitch::before, .glitch::after { display: none; }
+  .caret { animation: none; }
+}
